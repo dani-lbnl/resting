@@ -1,13 +1,5 @@
 # README #
 
-[Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### Bitbucket access ###
-
-I was unable to clone using HTTPS and Google/LBNL login. However, going to "Personal settings"; "SSH keys" on the Bitbucket site and copying in an SSH public key gave me passwordless SSH access to the repository.
-
-This README would normally document whatever steps are necessary to get your application up and running.
-
 ### What is this repository for? ###
 
 * Code for the "ACTS: Amplifying COVID-19 Testing and Surveillance" project
