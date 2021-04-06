@@ -1,0 +1,111 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    field.cattle.io/creatorId: u-7dudr767av
+    nersc.gov/gid: "63001"
+    nersc.gov/gids: 53004,63001,93148
+    nersc.gov/uid: "63001"
+    nersc.gov/username: khiga
+  creationTimestamp: "2020-08-19T19:55:55Z"
+  generation: 1
+  labels:
+    cattle.io/creator: norman
+    workload.user.cattle.io/workloadselector: deployment-catalog-db
+  name: db
+  namespace: catalog
+  resourceVersion: "58446413"
+  selfLink: /apis/apps/v1/namespaces/catalog/deployments/db
+  uid: 14639e96-495e-4cc4-81ec-1763e3f3dbf8
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      workload.user.cattle.io/workloadselector: deployment-catalog-db
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        cattle.io/timestamp: "2020-08-19T19:55:54Z"
+      creationTimestamp: null
+      labels:
+        workload.user.cattle.io/workloadselector: deployment-catalog-db
+    spec:
+      containers:
+      - env:
+        - name: PGDATA
+          value: /var/lib/postgres/data
+        - name: POSTGRES_PASSWORD_FILE
+          value: /secrets/password
+        image: registry.nersc.gov/m3670/acts_postgres:12
+        imagePullPolicy: Always
+        name: db
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            add:
+            - CHOWN
+            - DAC_OVERRIDE
+            - FOWNER
+            - SETGID
+            - SETUID
+            drop:
+            - ALL
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
+        volumeMounts:
+        - mountPath: /secrets/password
+          name: vol1
+        - mountPath: /var/lib/postgres
+          name: postgres
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: registry-nersc
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: vol1
+        secret:
+          defaultMode: 256
+          items:
+          - key: password
+            path: password
+          optional: false
+          secretName: db-password
+      - name: postgres
+        persistentVolumeClaim:
+          claimName: postgres
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2020-08-19T19:55:58Z"
+    lastUpdateTime: "2020-08-19T19:55:58Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2020-08-19T19:55:55Z"
+    lastUpdateTime: "2020-08-19T19:55:58Z"
+    message: ReplicaSet "db-747594cf8" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
