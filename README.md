@@ -37,3 +37,17 @@
 * Writing tests
 * Code review
 * Other guidelines
+
+### Please reference us:
+ <div class="row">
+      <pre class="col-md-offset-2 col-md-8">
+@InProceedings{IKE:2021,
+author = {Kenneth Higa and Daniela Ushizima},
+title = {REST Interface Generator (RESTInG)},
+booktitle = {submitted},
+month = {Jul},
+year = {2021},
+pages = {1},
+}      </pre>
+    </div>
+ 
