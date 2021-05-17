@@ -3,10 +3,10 @@ import project
 
 repository_directory = '../'
 database_directory = repository_directory + 'postgres/'
-root_directory = repository_directory + 'webserver/website/'
-app_directory = root_directory + f'{project.app_name}/'
-site_directory = root_directory + 'website/'
-template_directory = root_directory + 'templates/'
+website_directory = repository_directory + 'webserver/website/'
+app_directory = website_directory + f'{project.app_name}/'
+site_directory = website_directory + 'website/'
+template_directory = website_directory + 'templates/'
 
 ### Will might want to use a class-based approach that can retrieve and hold information until a new query dict is provided
 
