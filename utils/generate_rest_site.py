@@ -341,11 +341,11 @@ urlpatterns = [
 
 generate(urls_template,site_directory + 'urls.py')
 
-postgres_dockerfile_template = f'''
+postgres_build_template = f'''
 #!/bin/sh
 docker build -t registry.nersc.gov/{project.NERSC_project_id}/{project.app_name}_postgres .
 '''
-generate(postgres_dockerfile_template,database_directory + 'Dockerfile')
+generate(postgres_build_template,database_directory + 'build.sh')
 
 ## client.py
 
