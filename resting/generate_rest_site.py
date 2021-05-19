@@ -414,7 +414,7 @@ hashed_postgres_password = postgres_password_hasher.hexdigest()\
         'HOST': 'db',\
         'PORT': '5432'   
 '''
-generate(urls_template,site_directory + 'sed_script_settings.py')
+generate(website_sed_script_settings_template,site_directory + 'sed_script_settings.py')
 
 website_dockerfile_template = f'''
 # There are version problems with mod_wsgi and psycopg2 in the latest (3.8) image, so stay with 3.7
