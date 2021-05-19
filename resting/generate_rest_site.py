@@ -1,10 +1,13 @@
 import re
 import project
+import os
 
 repository_directory = '../'
 database_directory = repository_directory + 'postgres/'
-website_directory = repository_directory + 'webserver/website/'
+webserver_directory = repository_directory + 'webserver/'
+website_directory = webserver_directory + 'website/'
 app_directory = website_directory + f'{project.app_name}/'
+os.mkdir(app_directory)
 site_directory = website_directory + 'website/'
 template_directory = website_directory + 'templates/'
 
@@ -346,6 +349,12 @@ postgres_build_template = f'''
 docker build -t registry.nersc.gov/{project.NERSC_project_id}/{project.app_name}_postgres .
 '''
 generate(postgres_build_template,database_directory + 'build.sh')
+
+website_build_template = f'''
+#!/bin/sh
+docker build -t registry.nersc.gov/{project.NERSC_project_id}/{project.app_name}_webserver:3.7 .
+'''
+generate(website_build_template,webserver_directory + 'build.sh')
 
 ## client.py
 
