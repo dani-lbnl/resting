@@ -2,15 +2,14 @@
 import hashlib
 
 /^ALLOWED_HOSTS/c\
-ALLOWED_HOSTS = ['.nersc.gov','.nersc.org','.lbl.gov']\
+ALLOWED_HOSTS = ['*']\
 URL_FIELD_NAME = 'record_url'
 
 /^INSTALLED_APPS/a\
     'rest_framework',\
     'rest_framework.authtoken',\
     'django_filters',\
-    'django.contrib.postgres',\
-    'database.apps.DatabaseConfig',
+    'django.contrib.postgres',
 
 # This does not seem to work properly, switching to the simpler PageNumberPagination style
 #'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',\
