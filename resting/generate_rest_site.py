@@ -361,6 +361,61 @@ docker build -t registry.nersc.gov/{project.NERSC_project_id}/{project.app_name}
 generate(website_build_template,webserver_directory + 'build.sh')
 os.chmod(webserver_directory + 'build.sh',stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
+# This must be written before the Dockerfile runs
+website_sed_script_settings_template = f'''
+/import os/a\
+import hashlib
+
+/^ALLOWED_HOSTS/c\
+ALLOWED_HOSTS = ['.nersc.gov','.nersc.org','.lbl.gov']\
+URL_FIELD_NAME = 'record_url'
+
+/^INSTALLED_APPS/a\
+    'rest_framework',\
+    'rest_framework.authtoken',\
+    'django_filters',\
+    'django.contrib.postgres',\
+    '{project.app_name}.apps.{project.app_name.capitalize()}Config',
+
+# This does not seem to work properly, switching to the simpler PageNumberPagination style
+#'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',\
+# Perhaps there is some conflict with the dynamic filtering system
+/^MIDDLEWARE/i\
+REST_FRAMEWORK = {\
+    'DEFAULT_AUTHENTICATION_CLASSES': [\
+        'rest_framework.authentication.TokenAuthentication',\
+        'rest_framework.authentication.SessionAuthentication'\
+        ],\
+    'DEFAULT_FILTER_BACKENDS': [\
+                                'rest_framework_filters.backends.DjangoFilterBackend'],\
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',\
+    'PAGE_SIZE':20\
+    }\
+
+/^        'DIRS':/c\
+        'DIRS': ['/usr/lib/python3/dist-packages/rest_framework/templates/'],
+
+/^DATABASES/i\
+# Allow connections to persist (default is 0 seconds)\
+CONN_MAX_AGE = 60\
+with open(os.environ['POSTGRES_PASSWORD_FILE'],'r') as password_file:\
+    postgres_password = password_file.readline()\
+postgres_password_hasher = hashlib.md5()\
+postgres_password_hasher.update(postgres_password.encode())\
+hashed_postgres_password = postgres_password_hasher.hexdigest()\
+
+/^        'ENGINE'/c\
+        'ENGINE': 'django.db.backends.postgresql',
+
+/^        'NAME': os/c\
+        'NAME': 'postgres',\
+        'USER': 'postgres',\
+        'PASSWORD': postgres_password,\
+        'HOST': 'db',\
+        'PORT': '5432'   
+'''
+generate(urls_template,site_directory + 'sed_script_settings.py')
+
 website_dockerfile_template = f'''
 # There are version problems with mod_wsgi and psycopg2 in the latest (3.8) image, so stay with 3.7
 FROM python:3.7
