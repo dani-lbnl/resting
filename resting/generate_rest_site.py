@@ -391,6 +391,7 @@ RUN cp /srv/website/templates/* /usr/lib/python3/dist-packages/rest_framework/te
 # Run the web server in the foreground so that the container does not immediately exit
 CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
 '''
+generate(website_build_template,webserver_directory + 'Dockerfile')
 
 ## client.py
 
