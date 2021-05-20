@@ -68,6 +68,8 @@ class CSVDataPlugin(DataPlugin):
             string_value = row[guidance[0]]
             if string_value == '' and guidance[1] != str:
                 return_value[attribute] = None
+            elif guidance[1] == int:
+                return_value[attribute] = int(float(string_value))
             else:
                 return_value[attribute] = guidance[1](string_value)
         return return_value
