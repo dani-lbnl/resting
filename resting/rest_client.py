@@ -316,6 +316,7 @@ class DataConnection:
             assert self.authenticated_database_connection != None, 'ERROR: could not open authenticated database connection'
         else:
             self.authenticated_database_connection = None
+            self.unauthenticated_database_connection = DatabaseConnection(self.server)
 
         self.model_descriptions = project.models
 
@@ -578,17 +579,33 @@ filter_form : dict
         filter_url = self.get_filter_url(model_name,filter_form)
         ## Authenticated connections might not be required to download, might want to make that configurable
         # Lower model_name to get around what might be a bug in Django REST Framework
-        page = self.authenticated_database_connection.authenticated_relative_request_and_receive(model_name.lower() + '/' + filter_url)
-        results = page['results']        
-        
-        while True:
+        if self.authenticated_database_connection == None:
+
+            page = self.unauthenticated_database_connection.relative_request_and_receive(model_name.lower() + '/' + filter_url)
+            results = page['results']        
+
+            while True:
+
+                if page['next'] == None:
+                    break
+                else:
+                    next_page = self.unauthenticated_database_connection.relative_request_and_receive(page['next'].rsplit(self.server+'/')[1])
+                    page = next_page
+                    results.extend(page['results'])
             
-            if page['next'] == None:
-                break
-            else:
-                next_page = self.authenticated_database_connection.authenticated_relative_request_and_receive(page['next'].rsplit(self.server+'/')[1])
-                page = next_page
-                results.extend(page['results'])
+        else:
+
+            page = self.authenticated_database_connection.authenticated_relative_request_and_receive(model_name.lower() + '/' + filter_url)
+            results = page['results']        
+
+            while True:
+
+                if page['next'] == None:
+                    break
+                else:
+                    next_page = self.authenticated_database_connection.authenticated_relative_request_and_receive(page['next'].rsplit(self.server+'/')[1])
+                    page = next_page
+                    results.extend(page['results'])
 
         return results
 
