@@ -341,6 +341,8 @@ from django.conf import settings
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views as authtoken_views
 from {project.app_name} import views
+if project.api_prefix != '':
+    from rest_framework.urlpatterns import format_suffix_patterns
 
 ## Create a router and register viewsets
 
