@@ -322,7 +322,7 @@ router = DefaultRouter()
 class CustomRouter(DefaultRouter):
     def get_urls(self):
         all_urls = super(CustomRouter,self).get_urls()
-        all_urls.append(r'^''' + project_api_prefix + '''$',self.get_api_root_view(api_urls=all_urls),name='api-root')
+        all_urls.append(r'^''' + project.api_prefix + '''$',self.get_api_root_view(api_urls=all_urls),name='api-root')
         return format_suffix_patterns(all_urls)
 router = CustomRouter()
 '''
