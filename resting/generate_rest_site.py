@@ -319,6 +319,8 @@ router = DefaultRouter()
 '''
     else:
         return_value = '''
+from rest_framework.urlpatterns import format_suffix_patterns
+
 class CustomRouter(DefaultRouter):
     def get_urls(self):
         all_urls = super(CustomRouter,self).get_urls()
@@ -341,8 +343,6 @@ from django.conf import settings
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views as authtoken_views
 from {project.app_name} import views
-if project.api_prefix != '':
-    from rest_framework.urlpatterns import format_suffix_patterns
 
 ## Create a router and register viewsets
 
