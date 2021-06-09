@@ -317,6 +317,11 @@ def router_registrations():
 router = DefaultRouter()
 
 '''
+        for model_name in project.models.keys():
+            # It seems that Django REST Framework might have a bug that assumes that lowercase view names are used
+            model_name_lower = model_name.lower()
+            return_value += f"router.register(r'{model_name_lower}', views.{model_name}ViewSet,basename='{model_name_lower}')\n"        
+        
     else:
         return_value = '''
 from rest_framework.urlpatterns import format_suffix_patterns
@@ -329,10 +334,10 @@ class CustomRouter(DefaultRouter):
 router = CustomRouter()
 '''
         
-    for model_name in project.models.keys():
-        # It seems that Django REST Framework might have a bug that assumes that lowercase view names are used
-        model_name_lower = model_name.lower()
-        return_value += f"router.register(r'{project.api_prefix}/{model_name_lower}', views.{model_name}ViewSet,basename='{model_name_lower}')\n"        
+        for model_name in project.models.keys():
+            # It seems that Django REST Framework might have a bug that assumes that lowercase view names are used
+            model_name_lower = model_name.lower()
+            return_value += f"router.register(r'{project.api_prefix}/{model_name_lower}', views.{model_name}ViewSet,basename='{model_name_lower}')\n"        
 
     return return_value
         
