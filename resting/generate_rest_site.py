@@ -312,12 +312,25 @@ generate(serializers_template,app_directory + 'serializers.py')
 
 def router_registrations():
 
-    return_value = ""
-    
+    if project.api_prefix == '':
+        return_value = '''
+router = DefaultRouter()
+
+'''
+    else:
+        return_value = '''
+class CustomRouter(DefaultRouter):
+    def get_urls(self):
+        all_urls = super(CustomRouter,self).get_urls()
+        all_urls.append(r'^''' + project_api_prefix + '''$',self.get_api_root_view(api_urls=all_urls),name='api-root')
+        return format_suffix_patterns(all_urls)
+router = CustomRouter()
+'''
+        
     for model_name in project.models.keys():
         # It seems that Django REST Framework might have a bug that assumes that lowercase view names are used
         model_name_lower = model_name.lower()
-        return_value += f"router.register(r'{model_name_lower}', views.{model_name}ViewSet,basename='{model_name_lower}')\n"        
+        return_value += f"router.register(r'{project.api_prefix}/{model_name_lower}', views.{model_name}ViewSet,basename='{model_name_lower}')\n"        
 
     return return_value
         
@@ -330,8 +343,6 @@ from rest_framework.authtoken import views as authtoken_views
 from {project.app_name} import views
 
 ## Create a router and register viewsets
-
-router = DefaultRouter()
 
 {router_registrations()}
 urlpatterns = [
