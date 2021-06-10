@@ -328,7 +328,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 class CustomRouter(DefaultRouter):
     def get_urls(self):
-        all_urls = super(SimpleRouter,self).get_urls()
+        all_urls = super(DefaultRouter,self).get_urls()
         all_urls.append(url(r'^''' + project.api_prefix + '''$',self.get_api_root_view(api_urls=all_urls),name='api-root'))
         return format_suffix_patterns(all_urls)
 
@@ -346,7 +346,7 @@ urls_template = f'''
 from django.contrib import admin
 from django.conf.urls import url, include
 from django.conf import settings
-from rest_framework.routers import SimpleRouter, DefaultRouter
+from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views as authtoken_views
 from {project.app_name} import views
 
