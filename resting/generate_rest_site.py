@@ -337,7 +337,7 @@ class CustomRouter(DefaultRouter):
         urls = super(DefaultRouter,self).get_urls()
         urls = format_suffix_patterns(urls)
         urls.append(url(r'^''' + project.api_prefix + '''/?$',self.get_api_root_view(api_urls=urls),name='api-root'))
-        urls.append(url(r'^$',TemplateView.as_view(template_name="''' + project.index_template + ''''")))
+        urls.append(url(r'^$',TemplateView.as_view(template_name="''' + project.index_template + '''")))
         return urls
 
 router = CustomRouter()
