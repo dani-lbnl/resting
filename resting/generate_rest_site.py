@@ -175,8 +175,8 @@ generate(models_template,app_directory + 'models.py')
             
 def view_classes():
 
-    return_value = ""
-
+    return_value = ""        
+    
     for model,description in project.models.items():
 
         filter_template = f'''
@@ -323,14 +323,22 @@ router = DefaultRouter()
             return_value += f"router.register(r'{model_name_lower}', views.{model_name}ViewSet,basename='{model_name_lower}')\n"        
         
     else:
+        # Check that an template filename has been provided
+        assert project.index_template != ''
+        
+        # This follows the pattern in rest_framework/routers.py
+        # also set the default view
         return_value = '''
 from rest_framework.urlpatterns import format_suffix_patterns
+from django.views.generic import TemplateView
 
 class CustomRouter(DefaultRouter):
     def get_urls(self):
-        all_urls = super(DefaultRouter,self).get_urls()
-        all_urls.append(url(r'^''' + project.api_prefix + '''$',self.get_api_root_view(api_urls=all_urls),name='api-root'))
-        return format_suffix_patterns(all_urls)
+        urls = super(DefaultRouter,self).get_urls()
+        urls = format_suffix_patterns(urls)
+        urls.append(url(r'^''' + project.api_prefix + '''/?$',self.get_api_root_view(api_urls=urls),name='api-root'))
+        urls.append(url(r'^$',TemplateView.as_view(template_name="''' + project.index_template + ''''")))
+        return urls
 
 router = CustomRouter()
 '''
