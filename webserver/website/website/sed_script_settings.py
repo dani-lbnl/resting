@@ -27,7 +27,7 @@ REST_FRAMEWORK = {\
     }\
 
 /^        'DIRS':/c\
-        'DIRS': ['/usr/lib/python3/dist-packages/rest_framework/templates/','/srv/website/templates/'],
+        'DIRS': ['/srv/website/templates/'],
 
 /^DATABASES/i\
 # Allow connections to persist (default is 0 seconds)\
