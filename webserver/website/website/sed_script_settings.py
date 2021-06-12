@@ -1,11 +1,14 @@
 /import os/a\
-import hashlib
+import hashlib\
+STATIC_URL = '/static/'\
+STATIC_ROOT = '/srv/static/'
 
 /^ALLOWED_HOSTS/c\
 ALLOWED_HOSTS = ['*']\
 URL_FIELD_NAME = 'record_url'
 
 /^INSTALLED_APPS/a\
+    'django.contrib.staticfiles',\
     'rest_framework',\
     'rest_framework.authtoken',\
     'django_filters',\
