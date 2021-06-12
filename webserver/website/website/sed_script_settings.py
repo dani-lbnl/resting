@@ -8,7 +8,7 @@ ALLOWED_HOSTS = ['*']\
 URL_FIELD_NAME = 'record_url'
 
 /^INSTALLED_APPS/a\
-#    'django.contrib.staticfiles',\
+    'django.contrib.staticfiles',\
     'rest_framework',\
     'rest_framework.authtoken',\
     'django_filters',\
