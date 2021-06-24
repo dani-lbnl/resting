@@ -312,6 +312,9 @@ generate(serializers_template,app_directory + 'serializers.py')
 
 def router_registrations():
 
+    assert project.doc_template != ''
+    assert project.python_template != ''
+    
     if project.api_prefix == '':
         return_value = '''
 router = DefaultRouter()
@@ -338,6 +341,8 @@ class CustomRouter(DefaultRouter):
         urls = format_suffix_patterns(urls)
         urls.append(url(r'^''' + project.api_prefix + '''/?$',self.get_api_root_view(api_urls=urls),name='api-root'))
         urls.append(url(r'^$',TemplateView.as_view(template_name="''' + project.index_template + '''")))
+        urls.append(url(r'^doc/?$',TemplateView.as_view(template_name="''' + project.doc_template + '''")))
+        urls.append(url(r'^python/?$',TemplateView.as_view(template_name="''' + project.python_template + '''")))
         return urls
 
 router = CustomRouter()
