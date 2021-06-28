@@ -1,6 +1,5 @@
 /import os/a\
-import hashlib\
-STATIC_ROOT = '/srv/static/'
+import hashlib
 
 /^ALLOWED_HOSTS/c\
 ALLOWED_HOSTS = ['*']\
@@ -48,8 +47,11 @@ hashed_postgres_password = postgres_password_hasher.hexdigest()\
         'PASSWORD': postgres_password,\
         'HOST': 'db',\
         'PORT': '5432'   
-/STATIC_URL/a\
-STATICFILES_DIRS = [
-    '/usr/lib/python3/dist-packages/django/contrib/admin/static/',\
-    '/usr/lib/python3/dist-packages/rest_framework/static/'\
-    ]
+
+/^STATIC_URL/a\
+STATIC_ROOT = '/srv/static/'\
+STATICFILES_DIRS = [\
+   '/usr/lib/python3/dist-packages/django/contrib/admin/static/',\
+   '/usr/lib/python3/dist-packages/rest_framework/static/'\
+   ]
+
