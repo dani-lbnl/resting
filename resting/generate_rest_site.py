@@ -417,8 +417,8 @@ python manage.py startapp {project.app_name}
 # Now that the website skeleton exists, copy in files for customization
 COPY website srv/website/
 
-# Modify stock files
-RUN cp /srv/website/templates/* /usr/lib/python3/dist-packages/rest_framework/templates/rest_framework/ && cd /srv/website/website && mv settings.py dist_settings.py && sed -f sed_script_settings.py dist_settings.py > settings.py && echo "INSTALLED_APPS.append('{project.app_name}.apps.{project.app_name.capitalize()}Config')" >> settings.py
+# Modify stock files and copy static files
+RUN cp /srv/website/templates/* /usr/lib/python3/dist-packages/rest_framework/templates/rest_framework/ && cd /srv/website/website && mv settings.py dist_settings.py && sed -f sed_script_settings.py dist_settings.py > settings.py && echo "INSTALLED_APPS.append('{project.app_name}.apps.{project.app_name.capitalize()}Config')" >> settings.py && cd /srv/website && python manage.py collectstatic
 
 # Run the web server in the foreground so that the container does not immediately exit
 CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
