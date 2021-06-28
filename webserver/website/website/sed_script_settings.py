@@ -39,6 +39,8 @@ if 'POSTGRES_PASSWORD_FILE' in os.environ:\
     postgres_password_hasher = hashlib.md5()\
     postgres_password_hasher.update(postgres_password.encode())\
     hashed_postgres_password = postgres_password_hasher.hexdigest()\
+else:\
+    postgres_password = None
 
 /^        'ENGINE'/c\
         'ENGINE': 'django.db.backends.postgresql',
