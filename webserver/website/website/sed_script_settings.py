@@ -47,5 +47,9 @@ hashed_postgres_password = postgres_password_hasher.hexdigest()\
         'USER': 'postgres',\
         'PASSWORD': postgres_password,\
         'HOST': 'db',\
-        'PORT': '5432'
-    
+        'PORT': '5432'   
+/STATIC_URL/a\
+STATICFILES_DIRS = [
+    '/usr/lib/python3/dist-packages/django/contrib/admin/static/',\
+    '/usr/lib/python3/dist-packages/rest_framework/static/'\
+    ]

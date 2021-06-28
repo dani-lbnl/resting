@@ -425,6 +425,62 @@ CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
 '''
 generate(website_dockerfile_template,webserver_directory + 'Dockerfile')
 
+## doc.html
+
+def models():
+
+    return_value = ""        
+    
+    for model,description in project.models.items():
+
+        filter_template = f'''
+class {model}Filter(rest_framework_filters.FilterSet):
+    class Meta:
+        model = {model}
+'''
+
+        return_value += filter_template
+
+        # It appears that newlines are sometimes quoted when strings are
+        # substituted into f-strings, so build strings by concatenation here
+
+        return_value += indent + indent + 'fields = {\n'
+
+        for field,parameters in description.items():
+            if parameters['filters'] != []:
+                # Skip fields with no filters
+                return_value += indent + indent + indent + f"'{field}': {str(parameters['filters'])},\n"
+        
+        return_value += indent + indent + indent + '}\n'
+        
+        viewset_template = f'''
+class {model}ViewSet(viewsets.ModelViewSet):
+    filter_class = {model}Filter
+    serializer_class = {model}Serializer
+    queryset = {model}.objects.all()
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+'''
+
+        return_value += viewset_template
+
+    return return_value
+        
+doc_template = f'''
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <title>{project.app_name} database API</title>
+  <body>
+    <h1>{project.app_name} database API</h1>
+{models()}
+  </body>
+</html>
+'''
+
+#generate(doc_template,template_directory + 'doc.html')
+
+
 ## client.py
 
 # def client_functions():
