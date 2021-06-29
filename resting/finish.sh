@@ -10,7 +10,7 @@ cp -R $TOP/webserver/doc/_build/html/* doc
 cd $TOP
 # If not yet authenticated, run:
 # docker login registry.nersc.gov
-cd ../postgres
+cd postgres
 sudo ./build.sh
 docker push registry.nersc.gov/m3670/acts_postgres:12
 cd ../webserver
