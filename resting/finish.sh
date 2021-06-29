@@ -1,10 +1,15 @@
-# For testing
+# Assume that we're starting in the resting directory, should check for this
+APP_NAME=`$PYTHON -c "import project;print(project.app_name)"`
 cd ..
 TOP=`pwd`
-cd $TOP/webserver
-cd doc
+# Generate the site documentation
+cd $TOP/webserver/doc
 make html
-cd $TOP/webserver/website/static/website
+cd $TOP/webserver/website/$APP_NAME
+mkdir static
+cd static
+mkdir $APP_NAME
+cd $APP_NAME
 mkdir doc
 cp -R $TOP/webserver/doc/_build/html/* doc
 cd $TOP
@@ -26,4 +31,3 @@ docker push registry.nersc.gov/m3670/acts_webserver:3.7
 # python manage.py createsuperuser
 # Then upload the initial metadata by going to the resting directory and running
 # python3 upload_csv.py
-
