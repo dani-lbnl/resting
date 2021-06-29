@@ -5,12 +5,7 @@ TOP=`pwd`
 # Generate the site documentation
 cd $TOP/webserver/doc
 make html
-cd $TOP/webserver/website/$APP_NAME
-mkdir static
-cd static
-mkdir $APP_NAME
-cd $APP_NAME
-mkdir doc
+# Copy the site documentation to the doc subdirectory of the app statid directory
 cd $TOP/webserver/doc/_build/html
 cp -R * $TOP/webserver/website/$APP_NAME/static/$APP_NAME/doc
 cd $TOP
