@@ -10,7 +10,9 @@ else
     echo Could not find Python executable
     exit
 fi
+# Assume that we're starting in the resting directory, should check for this
 APP_NAME=`$PYTHON -c "import project;print(project.app_name)"`
+cd ..
 TOP=`pwd`
 cd $TOP/webserver
 mkdir doc
