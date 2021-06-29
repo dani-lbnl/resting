@@ -1,11 +1,11 @@
 #!/bin/sh
 # Should check for Python executable name
-if python -V
-then
-    PYTHON=python
-elif python3 -V
+if python3 -V
 then
     PYTHON=python3
+elif python -V
+then
+    PYTHON=python
 else
     echo Could not find Python executable
     exit
