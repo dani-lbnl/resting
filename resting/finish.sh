@@ -11,7 +11,8 @@ cd static
 mkdir $APP_NAME
 cd $APP_NAME
 mkdir doc
-cp -R $TOP/webserver/doc/_build/html/* doc
+cd $TOP/webserver/doc/_build/html
+cp -R * $TOP/webserver/website/$APP_NAME/static/$APP_NAME/doc
 cd $TOP
 # If not yet authenticated, run:
 # docker login registry.nersc.gov
