@@ -6,6 +6,7 @@ import stat
 repository_directory = '../'
 database_directory = repository_directory + 'postgres/'
 webserver_directory = repository_directory + 'webserver/'
+website_documentation_directory = webserver_directory + 'website/doc/'
 website_directory = webserver_directory + 'website/'
 app_directory = website_directory + f'{project.app_name}/'
 os.mkdir(app_directory)
@@ -463,7 +464,39 @@ class {model}ViewSet(viewsets.ModelViewSet):
         return_value += viewset_template
 
     return return_value
-        
+
+index_rst_template = f'''
+=====================
+Website documentation
+=====================
+
+.. toctree::
+   filters
+'''
+
+generate(index_rst_template,website_documentation_directory + 'index.rst')
+
+def fields_and_filters():
+    output = ''
+    for model in project.models:
+        output += '* **' + model + '**\n\n'
+        for field in project.models[model]:
+            output += '  * **' + field + '**\n'
+        output += '\n'
+    return output
+
+filters_rst_template = 
+f'''
+==================
+Fields and filters
+==================
+
+{fields_and_filters()}
+'''
+
+generate(filters_rst_template,website_documentation_directory + 'filters.rst')
+
+
 doc_template = f'''
 <!DOCTYPE html>
 <html>
