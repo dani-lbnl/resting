@@ -482,6 +482,9 @@ def fields_and_filters():
         output += '* **' + model + '**\n\n'
         for field in project.models[model]:
             output += '  * **' + field + '**\n'
+            for field_filter in project.models[model][field]['filters']:
+                output += '    * ' + field_filter + '\n'
+            output += '\n'
         output += '\n'
     return output
 
