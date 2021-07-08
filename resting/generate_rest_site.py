@@ -485,8 +485,7 @@ def fields_and_filters():
         output += '\n'
     return output
 
-filters_rst_template = 
-f'''
+filters_rst_template = f'''
 ==================
 Fields and filters
 ==================
@@ -495,7 +494,6 @@ Fields and filters
 '''
 
 generate(filters_rst_template,website_documentation_directory + 'filters.rst')
-
 
 doc_template = f'''
 <!DOCTYPE html>
