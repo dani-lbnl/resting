@@ -6,7 +6,7 @@ import stat
 repository_directory = '../'
 database_directory = repository_directory + 'postgres/'
 webserver_directory = repository_directory + 'webserver/'
-website_documentation_directory = webserver_directory + 'website/doc/'
+website_documentation_directory = webserver_directory + 'doc/'
 website_directory = webserver_directory + 'website/'
 app_directory = website_directory + f'{project.app_name}/'
 os.mkdir(app_directory)
