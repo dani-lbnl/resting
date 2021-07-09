@@ -35,4 +35,4 @@ mkdir doc
 # Create a downloads folder
 mkdir downloads
 # Copy the REST client Python module
-cp $TOP/resting/resting/rest_client.py downloads
+cp $TOP/resting/rest_client.py downloads
