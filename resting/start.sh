@@ -32,3 +32,7 @@ cd static
 mkdir $APP_NAME
 cd $APP_NAME
 mkdir doc
+# Create a downloads folder
+mkdir downloads
+# Copy the REST client Python module
+cp $TOP/resting/resting/rest_client.py downloads

@@ -472,13 +472,13 @@ Website documentation
 
 .. toctree::
    filters
+   python
 '''
-#  python
 #  notebook
 generate(index_rst_template,website_documentation_directory + 'index.rst')
 
 def fields_and_filters():
-    output = 'https://' + project.server_name + '/api/<lowercase model name>/?<first filter name>=<value(s)>&<second filter name>=<value(s)>...\n'
+    output = ''
     for model in project.models:
         output += '* **' + model + '**\n\n'
         for field in project.models[model]:
@@ -494,10 +494,24 @@ filters_rst_template = f'''
 Fields and filters
 ==================
 
+Syntax
+======
+
 {fields_and_filters()}
 '''
+#https://{project.server_name}/api/<lowercase model name>/?<first filter name>=<value(s)>&<second filter name>=<value(s)>...
 
 generate(filters_rst_template,website_documentation_directory + 'filters.rst')
+
+python_template = f'''
+=========================
+Python REST client module
+=========================
+
+`Download the Python REST client module<https://{project.server_name}/static/{project.app_name}/downloads/rest_client_`
+'''
+
+generate(filters_rst_template,website_documentation_directory + 'python.rst')
 
 doc_template = f'''
 <!DOCTYPE html>
