@@ -471,7 +471,7 @@ Website documentation
 =====================
 
 .. toctree::
-   filters
+   api
    python
 '''
 #  notebook
@@ -489,19 +489,16 @@ def fields_and_filters():
         output += '\n'
     return output
 
-filters_rst_template = f'''
-==================
-Fields and filters
-==================
-
-Syntax
-======
+api_rst_template = f'''
+===
+API
+===
 
 {fields_and_filters()}
 '''
 #https://{project.server_name}/api/<lowercase model name>/?<first filter name>=<value(s)>&<second filter name>=<value(s)>...
 
-generate(filters_rst_template,website_documentation_directory + 'filters.rst')
+generate(filters_rst_template,website_documentation_directory + 'api.rst')
 
 python_template = f'''
 =========================
@@ -511,7 +508,7 @@ Python REST client module
 `Download the Python REST client module<https://{project.server_name}/static/{project.app_name}/downloads/rest_client_`
 '''
 
-generate(filters_rst_template,website_documentation_directory + 'python.rst')
+generate(python_template,website_documentation_directory + 'python.rst')
 
 doc_template = f'''
 <!DOCTYPE html>
