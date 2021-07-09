@@ -473,11 +473,12 @@ Website documentation
 .. toctree::
    filters
 '''
-
+#  python
+#  notebook
 generate(index_rst_template,website_documentation_directory + 'index.rst')
 
 def fields_and_filters():
-    output = ''
+    output = 'https://' + project.server_name + '/api/*<lowercase model name>*/?*<first filter name>*=*<value(s)>*&*<second filter name>*=*<value(s)>*\n'
     for model in project.models:
         output += '* **' + model + '**\n\n'
         for field in project.models[model]:
