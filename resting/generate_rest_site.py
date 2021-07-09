@@ -498,9 +498,9 @@ API
 '''
 #https://{project.server_name}/api/<lowercase model name>/?<first filter name>=<value(s)>&<second filter name>=<value(s)>...
 
-generate(filters_rst_template,website_documentation_directory + 'api.rst')
+generate(api_rst_template,website_documentation_directory + 'api.rst')
 
-python_template = f'''
+python_rst_template = f'''
 =========================
 Python REST client module
 =========================
@@ -508,7 +508,7 @@ Python REST client module
 `Download the Python REST client module<https://{project.server_name}/static/{project.app_name}/downloads/rest_client_`
 '''
 
-generate(python_template,website_documentation_directory + 'python.rst')
+generate(python_rst_template,website_documentation_directory + 'python.rst')
 
 doc_template = f'''
 <!DOCTYPE html>
