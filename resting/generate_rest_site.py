@@ -560,9 +560,10 @@ Python REST client module
 
 `Download the Python REST client module <https://{project.server_name}/static/{project.app_name}/downloads/rest_client.py>`_
 
-.. py:module:: rest_client
+Module reference
+================
 
-.. autoclass:: DataConnection
+.. automodule:: rest_client
    :members:
 '''
 
