@@ -1,4 +1,3 @@
-print(__builtins__,__doc__,__file__,__name__,__package__)
 import urllib.request
 #import urllib.parse
 import json
