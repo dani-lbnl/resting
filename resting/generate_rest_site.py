@@ -565,6 +565,7 @@ Module reference
 
 .. automodule:: rest_client
    :members:
+   :undoc-members:
 '''
 
 generate(python_rst_template,website_documentation_directory + 'python.rst')
