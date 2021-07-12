@@ -7,7 +7,7 @@ import project
 import csv
 
 import re
-
+print(__name__)
 class DataPlugin:
 
     def __init__(self):
