@@ -18,11 +18,11 @@
     * Docker
         * Official Python 3 image
             * Includes Django
-        * Django REST framework
+        * Django REST framework (Python 3 version)
         * Apache 2
 	* PostgreSQL
     * Python 3
-    * Sphinx
+    * Sphinx (Python 3 version)
     
 * Database configuration
     * PostgreSQL is used as the database backend for the web server; setup is described in the documentation.
