@@ -1,3 +1,4 @@
+print(autodoc_mock_imports)
 import urllib.request
 #import urllib.parse
 import json
@@ -7,8 +8,7 @@ import project
 import csv
 
 import re
-with open('temp','w') as output:
-    print(__spec__,__path__,file=output)
+
 class DataPlugin:
 
     def __init__(self):
