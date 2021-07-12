@@ -494,9 +494,25 @@ api_rst_template = f'''
 API
 ===
 
+To access the first page of **Model** records, use:
+
+https://{project.server_name}/api/\ **model**\ /
+
+To apply a **filter** characterized by a single **value** and access the first page of matching **Model** records, use:
+
+https://{project.server_name}/api/\ **model**\ /?\ **filter**=**value**
+
+To apply a **filter** characterized by **value1** and **value2** and access the first page of matching **Model** records, use:
+
+https://{project.server_name}/api/\ **model**\ /?\ **filter**=**value1**\ %2C\ **value2**
+
+To apply both **filter1** characterized by a single **value1** and **filter2** characterized by a single **value2** and access the first page of matching **Model** records, use:
+
+https://{project.server_name}/api/\ **model**\ /?\ **filter1**=**value1**\ &\ **filter2**=**value2**
+
 {fields_and_filters()}
 '''
-#https://{project.server_name}/api/<lowercase model name>/?<first filter name>=<value(s)>&<second filter name>=<value(s)>...
+#https://{project.server_name}/api/<lowercase model name>/?
 
 generate(api_rst_template,website_documentation_directory + 'api.rst')
 
