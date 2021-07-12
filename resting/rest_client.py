@@ -7,7 +7,8 @@ import project
 import csv
 
 import re
-print(__spec__,__path__)
+with open('temp','w') as output:
+    print(__spec__,__path__,file=output)
 class DataPlugin:
 
     def __init__(self):
