@@ -1,4 +1,4 @@
-print(__spec__)
+print(dir())
 import urllib.request
 #import urllib.parse
 import json
