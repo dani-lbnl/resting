@@ -483,11 +483,17 @@ filter_description = { 'exact':'case-sensitive match to specified value',
                        'istartswith':'case-insensitive match of beginning of string to specified value',
                        'icontains':'case-insensitive match of part of string to specified value',
                        'iendswith':'case-insensitive match of end of string to specified value',
-                       'iregex':'case-insensitive match to specified regular expression',
-                       'search':'case-insensitive match of part of string to specified value',
+                       'iregex':'case-insensitive match to specified regular expression (. matches any character, * matches zero or more of the previous character)',
+                       'search':'case-insensitive match of part of string to specified value',                       
+                       'startswith':'case-sensitive match of beginning of string to specified value',
+                       'contains':'case-sensitive match of part of string to specified value',
+                       'endswith':'case-sensitive match of end of string to specified value',
+                       'regex':'case-sensitive match to specified regular expression (. matches any character, * matches zero or more of the previous character)',
                        'isnull':'true (no value) or false (has value)',
                        'gte':'greater than or equal to specified value',
-                       'lte':'less than or equal to specified value'}
+                       'lte':'less than or equal to specified value',
+                       'gt':'greater than specified value',
+                       'lt':'less than specified value'}
 
 def fields_and_filters():
     output = ''
@@ -496,7 +502,7 @@ def fields_and_filters():
         for field in project.models[model]:
             output += '  * **' + field + '** field\n\n'
             for field_filter in project.models[model][field]['filters']:
-                output += '    * ' + field_filter + ' ' + filter_description[field_filter] + '\n'
+                output += '    * **' + field_filter + '**\ : ' + filter_description[field_filter] + '\n'
             output += '\n'
         output += '\n'
     return output
