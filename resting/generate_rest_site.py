@@ -494,21 +494,38 @@ api_rst_template = f'''
 API
 ===
 
-To access the first page of **Model** records, use:
+Thanks to the Django REST Framework, 
+
+Examples
+========
+
+To access the first page of **Model** records in HTML format, use:
 
 https://{project.server_name}/api/\ **model**\ /
 
-To apply a **filter** characterized by a single **value** and access the first page of matching **Model** records, use:
+To apply a **filter** described by a single **value** and access the first page of matching **Model** records in HTML format, use:
 
-https://{project.server_name}/api/\ **model**\ /?\ **filter**=**value**
+https://{project.server_name}/api/\ **model**\ /?\ **filter**\ =\ **value**
 
-To apply a **filter** characterized by **value1** and **value2** and access the first page of matching **Model** records, use:
+To apply a **filter** described by **value1** and **value2** and access the first page of matching **Model** records in HTML format, use:
 
-https://{project.server_name}/api/\ **model**\ /?\ **filter**=**value1**\ %2C\ **value2**
+https://{project.server_name}/api/\ **model**\ /?\ **filter**\ =\ **value1**\ %2C\ **value2**
 
-To apply both **filter1** characterized by a single **value1** and **filter2** characterized by a single **value2** and access the first page of matching **Model** records, use:
+or
 
-https://{project.server_name}/api/\ **model**\ /?\ **filter1**=**value1**\ &\ **filter2**=**value2**
+https://{project.server_name}/api/\ **model**\ /?\ **filter**\ =\ **value1**\ ,\ **value2**
+
+To apply a **filter** described by a single **value** and access page **N** of matching **Model** records in HTML format, use:
+
+https://{project.server_name}/api/\ **model**\ /?page=\ **N**\ &\ **filter**\ =\ **value**
+
+To apply both **filter1** described by a single **value1** and **filter2** described by a single **value2** and access the first page of matching **Model** records in HTML format, use:
+
+https://{project.server_name}/api/\ **model**\ /?\ **filter1**\ =\ **value1**\ &\ **filter2**=**value2**
+
+To apply a **filter** described by a single **value** and access the first page of matching **Model** records in JSON format, use:
+
+https://{project.server_name}/api/\ **model**\ /?\ **filter**\ =\ **value**\ &format=json
 
 {fields_and_filters()}
 '''
