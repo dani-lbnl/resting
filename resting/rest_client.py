@@ -1,4 +1,4 @@
-print(autodoc_mock_imports)
+print(__spec__)
 import urllib.request
 #import urllib.parse
 import json
