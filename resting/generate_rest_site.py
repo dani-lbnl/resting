@@ -483,13 +483,13 @@ filter_description = { 'exact':'case-sensitive match to specified value',
                        'istartswith':'case-insensitive match of beginning of string to specified value',
                        'icontains':'case-insensitive match of part of string to specified value',
                        'iendswith':'case-insensitive match of end of string to specified value',
-                       'iregex':'case-insensitive match to specified regular expression ("." matches any character, "*" matches zero or more of the previous character, "[\ *characters*\ ]" matches any one of the characters), etc.',
+                       'iregex':'case-insensitive match to specified regular expression ("." matches any character, "*" matches zero or more of the previous character, "[\ *characters*\ ]" matches any one of the characters, etc.)',
                        'search':'case-insensitive match of part of string to specified value',                       
                        'startswith':'case-sensitive match of beginning of string to specified value',
                        'contains':'case-sensitive match of part of string to specified value',
                        'endswith':'case-sensitive match of end of string to specified value',
                        'regex':'case-sensitive match to specified regular expression (. matches any character, * matches zero or more of the previous character)',
-                       'isnull':'true (no value) or false (has value)',
+                       'isnull':'*true* (no value) or *false* (has value)',
                        'gte':'greater than or equal to specified value',
                        'lte':'less than or equal to specified value',
                        'gt':'greater than specified value',
@@ -511,6 +511,9 @@ api_rst_template = f'''
 ===
 API
 ===
+
+Examples
+========
 
 https://{project.server_name}/api/\ **model**\ /
 
@@ -556,6 +559,8 @@ Python REST client module
 =========================
 
 `Download the Python REST client module <https://{project.server_name}/static/{project.app_name}/downloads/rest_client.py>`_
+
+.. automodule:: rest_client
 '''
 
 generate(python_rst_template,website_documentation_directory + 'python.rst')
