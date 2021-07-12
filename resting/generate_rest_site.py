@@ -483,7 +483,7 @@ filter_description = { 'exact':'case-sensitive match to specified value',
                        'istartswith':'case-insensitive match of beginning of string to specified value',
                        'icontains':'case-insensitive match of part of string to specified value',
                        'iendswith':'case-insensitive match of end of string to specified value',
-                       'iregex':'case-insensitive match to specified regular expression (. matches any character, * matches zero or more of the previous character)',
+                       'iregex':'case-insensitive match to specified regular expression ("." matches any character, "*" matches zero or more of the previous character, "[\ *characters*\ ]" matches any one of the characters), etc.',
                        'search':'case-insensitive match of part of string to specified value',                       
                        'startswith':'case-sensitive match of beginning of string to specified value',
                        'contains':'case-sensitive match of part of string to specified value',
@@ -526,6 +526,8 @@ or
 
 https://{project.server_name}/api/\ **model**\ /?\ **field**\ __\ **filter**\ =\ **value1**\ ,\ **value2**
 
+and likewise for additional values.
+
 To apply a **filter** described by a single **value** to a **field** and access page **N** of matching **Model** records in HTML format, use:
 
 https://{project.server_name}/api/\ **model**\ /?page=\ **N**\ &\ **field**\ __\ **filter**\ =\ **value**
@@ -533,6 +535,8 @@ https://{project.server_name}/api/\ **model**\ /?page=\ **N**\ &\ **field**\ __\
 To apply both **filter1** described by a single **value1** and **filter2** described by a single **value2** to a **field** and access the first page of matching **Model** records in HTML format, use:
 
 https://{project.server_name}/api/\ **model**\ /?\ **field**\ __\ **filter1**\ =\ **value1**\ &\ **field**\ __\ **filter2**\ =\ **value2**
+
+and likewise for additional fields and filters.
 
 To apply a **filter** described by a single **value** to a **field** and access the first page of matching **Model** records in JSON format, use:
 
