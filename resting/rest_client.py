@@ -319,19 +319,19 @@ class DataConnection:
 
         self.model_descriptions = project.models
 
-    def get_record_form(self,model_name):
+    # def get_record_form(self,model_name):
 
-        form = {}
+    #     form = {}
         
-        for attribute, description in self.model_descriptions[model_name].items():
-            attribute_type = description['type']
+    #     for attribute, description in self.model_descriptions[model_name].items():
+    #         attribute_type = description['type']
 
-            if 'Char' in attribute_type or 'Text' in attribute_type or 'URL' in attribute_type:
-                form[attribute] = ''
-            else:#    if 'Int' in attribute_type or 'Float' in attribute_type
-                form[attribute] = None                
+    #         if 'Char' in attribute_type or 'Text' in attribute_type or 'URL' in attribute_type:
+    #             form[attribute] = ''
+    #         else:#    if 'Int' in attribute_type or 'Float' in attribute_type
+    #             form[attribute] = None                
         
-        return form
+    #     return form
         
     def upload_record(self,unencoded_data,model_name):
         '''
@@ -485,6 +485,14 @@ Plugin : DataPlugin
     # I'm not expecting people to filter on relationship fields because they can filter the related objects and then follow the relationships if needed. I don't see a need to exclude filters yet though
         
     def get_filter_form(self,model_name):
+        '''
+Obtain an empty "form" for use in specifing filters to be applied
+
+Parameters
+----------
+model_name : string
+    Name of corresponding model in project.models
+        '''
         form = {}
         for attribute,parameters in self.model_descriptions[model_name].items():
             filters = {}
@@ -508,6 +516,17 @@ Plugin : DataPlugin
         return form
         
     def get_filter_url(self,model_name,filter_form):
+        '''
+Construct URL applying filters as specified in supplied ``filter_form``
+
+Parameters
+----------
+model_name : string
+    Name of corresponding model in project.models
+
+filter_form : dict
+    Description of filter parameters consistent with format used by self.get_filter_form()
+        '''
         model_attributes = self.model_descriptions[model_name]
         url = '?'
         for attribute in filter_form:

@@ -558,7 +558,16 @@ python_rst_template = f'''
 Python REST client module
 =========================
 
+Usage
+=====
+
 `Download the Python REST client module <https://{project.server_name}/static/{project.app_name}/downloads/rest_client.py>`_
+
+Run the Python 3 interpreter or script from the same directory, or add the directory to ``sys.path``.
+
+Records can be retrieved without providing authentication information.
+
+Authentication information is needed to add or update records.
 
 Module reference
 ================
