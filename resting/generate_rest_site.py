@@ -325,44 +325,45 @@ router = DefaultRouter()
             return_value += f"router.register(r'{model_name_lower}', views.{model_name}ViewSet,basename='{model_name_lower}')\n"        
         
     else:
+        # probably better to check if defined
         if project.index_template != '':
             # A template filename has been provided
         
             # This follows the pattern in rest_framework/routers.py
             # also set the default view
             return_value = '''
-    from rest_framework.urlpatterns import format_suffix_patterns
-    from django.views.generic import TemplateView
+from rest_framework.urlpatterns import format_suffix_patterns
+from django.views.generic import TemplateView
 
-    class CustomRouter(DefaultRouter):
-        def get_urls(self):
-            urls = super(DefaultRouter,self).get_urls()
-            urls = format_suffix_patterns(urls)
-            urls.append(url(r'^''' + project.api_prefix + '''/?$',self.get_api_root_view(api_urls=urls),name='api-root'))
-            urls.append(url(r'^$',TemplateView.as_view(template_name="''' + project.index_template + '''")))
-            return urls
+class CustomRouter(DefaultRouter):
+    def get_urls(self):
+        urls = super(DefaultRouter,self).get_urls()
+        urls = format_suffix_patterns(urls)
+        urls.append(url(r'^''' + project.api_prefix + '''/?$',self.get_api_root_view(api_urls=urls),name='api-root'))
+        urls.append(url(r'^$',TemplateView.as_view(template_name="''' + project.index_template + '''")))
+        return urls
 
-    router = CustomRouter()
+router = CustomRouter()
 '''
         else:
             # Redirect to where the static home page should be located
             return_value = '''
-    from rest_framework.urlpatterns import format_suffix_patterns
-    from django.views.generic import TemplateView
-    from django.http import HttpResponseRedirect
+from rest_framework.urlpatterns import format_suffix_patterns
+from django.views.generic import TemplateView
+from django.http import HttpResponseRedirect
 
-    def home_page_view(request):
-        return HttpResponseRedirect('/static/''' + project.app_name + '''/home/index.html')
+def home_page_view(request):
+    return HttpResponseRedirect('/static/''' + project.app_name + '''/home/index.html')
 
-    class CustomRouter(DefaultRouter):
-        def get_urls(self):
-            urls = super(DefaultRouter,self).get_urls()
-            urls = format_suffix_patterns(urls)
-            urls.append(url(r'^''' + project.api_prefix + '''/?$',self.get_api_root_view(api_urls=urls),name='api-root'))
-            urls.append(url(r'^$',home_page_view))
-            return urls
+class CustomRouter(DefaultRouter):
+    def get_urls(self):
+        urls = super(DefaultRouter,self).get_urls()
+        urls = format_suffix_patterns(urls)
+        urls.append(url(r'^''' + project.api_prefix + '''/?$',self.get_api_root_view(api_urls=urls),name='api-root'))
+        urls.append(url(r'^$',home_page_view))
+        return urls
 
-    router = CustomRouter()
+router = CustomRouter()
 '''
         
         for model_name in project.models.keys():
