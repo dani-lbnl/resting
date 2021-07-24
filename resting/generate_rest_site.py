@@ -313,9 +313,6 @@ generate(serializers_template,app_directory + 'serializers.py')
 
 def router_registrations():
 
-    assert project.doc_template != ''
-    assert project.python_template != ''
-    
     if project.api_prefix == '':
         # API root page will be the landing page
         return_value = '''
@@ -599,21 +596,6 @@ Module reference
 '''
 
 generate(python_rst_template,website_documentation_directory + 'python.rst')
-
-doc_template = f'''
-<!DOCTYPE html>
-<html>
-  <head>
-  </head>
-  <title>{project.app_name} database API</title>
-  <body>
-    <h1>{project.app_name} database API</h1>
-{models()}
-  </body>
-</html>
-'''
-
-#generate(doc_template,template_directory + 'doc.html')
 
 
 ## client.py
