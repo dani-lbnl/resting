@@ -77,10 +77,8 @@ class CSVDataPlugin(DataPlugin):
         self.csv_file.close()
 
 class DatabaseConnection:
-    '''Provides high-level database access.''' 
-    def __init__(self,fqdn_or_ip_address,username=None,password=None,token=None):
-        '''
-Manages HTTPS communication with specified web server using Django REST framework
+    '''
+Provides high-level database access
 
 Parameters
 ----------
@@ -95,7 +93,8 @@ password : string
 
 token : string
     Authentication token associated with user account on web server using Django REST framework; files containing tokens should not be readable by other users who should not have corresponding access to the web server.
-        '''
+'''
+    def __init__(self,fqdn_or_ip_address,username=None,password=None,token=None):
 
         assert type(fqdn_or_ip_address) == str
         
@@ -293,9 +292,7 @@ dict
 #         return self.quote_relative_request_and_receive(relative_location,headers=headers,unencoded_data=unencoded_data,encoded_data=encoded_data)
     
 class DataConnection:
-    '''Provides low-level database access.'''
-    def __init__(self,server,username=None,password=None):
-        '''
+    '''Provides high-level database access'''
 Parameters
 ----------
 server: string
@@ -307,6 +304,7 @@ username (optional keyword argument): string
 password (optional keyword argument): string
     Password associated with username
 '''
+    def __init__(self,server,username=None,password=None):
         self.server = server
         self.server_re = self.server.translate({46:r'\.'})
 
@@ -371,9 +369,9 @@ filename : string
 model_name : string
     Name of corresponding model in project.models
 
-Plugin : DataPlugin
-    Plugin used to extract records from provided data file
-        '''
+Plugin (optional keyword argument): DataPlugin
+    Plugin used to extract records from provided data file, defaults to CSVDataPlugin
+'''
         assert self.authenticated_database_connection != None, 'ERROR: username and/or password not provided for authenticated connection'
         
         source = Plugin(model_name,filename)
@@ -503,7 +501,12 @@ Parameters
 ----------
 model_name : string
     Name of corresponding model in project.models
-        '''
+
+Returns
+-------
+dictionary
+    Filter specification form, with one record for each field for which filters may be specified
+'''
         form = {}
         for attribute,parameters in self.model_descriptions[model_name].items():
             filters = {}
@@ -537,7 +540,12 @@ model_name : string
 
 filter_form : dict
     Description of filter parameters consistent with format used by self.get_filter_form()
-        '''
+
+Returns
+-------
+string
+    URL expressing filters specified in form
+'''
         model_attributes = self.model_descriptions[model_name]
         url = '?'
         for attribute in filter_form:
@@ -603,6 +611,11 @@ model_name : string
 
 filter_form : dict
     Description of filter parameters consistent with format used by self.get_filter_form()
+
+Returns
+-------
+list
+    All records matching filter, each represented by a dictionary
         '''
 
         filter_url = self.get_filter_url(model_name,filter_form)

@@ -586,7 +586,7 @@ Run the Python 3 interpreter or script from the same directory, or add the direc
 
 Records can be retrieved without providing authentication information.
 
-Authentication information is needed to add or update records.
+Authentication information is needed to add records.
 
 Module reference
 ================
