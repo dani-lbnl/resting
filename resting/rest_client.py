@@ -77,7 +77,7 @@ class CSVDataPlugin(DataPlugin):
         self.csv_file.close()
 
 class DatabaseConnection:
-    
+    '''Provides high-level database access.''' 
     def __init__(self,fqdn_or_ip_address,username=None,password=None,token=None):
         '''
 Manages HTTPS communication with specified web server using Django REST framework
@@ -293,9 +293,20 @@ dict
 #         return self.quote_relative_request_and_receive(relative_location,headers=headers,unencoded_data=unencoded_data,encoded_data=encoded_data)
     
 class DataConnection:
-
+    '''Provides low-level database access.'''
     def __init__(self,server,username=None,password=None):
+'''
+Parameters
+----------
+server: string
+    FQDN or IP address of server running RESTInG deployment
 
+username (optional keyword argument): string 
+    Django username for determining access
+
+password (optional keyword argument): string
+    Password associated with username
+'''
         self.server = server
         self.server_re = self.server.translate({46:r'\.'})
 

@@ -584,8 +584,6 @@ Usage
 
 Run the Python 3 interpreter or script from the same directory, or add the directory to ``sys.path``.
 
-The ``DatabaseConnection`` class provides low-level access to the database, and the ``DataConnection`` class provides high-level access. Most users will not need low-level access.
-
 Records can be retrieved without providing authentication information.
 
 Authentication information is needed to add or update records.
