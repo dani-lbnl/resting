@@ -78,7 +78,7 @@ class CSVDataPlugin(DataPlugin):
 
 class DatabaseConnection:
     '''
-Provides high-level database access
+Provides low-level database access
 
 Parameters
 ----------
@@ -291,9 +291,9 @@ dict
         
 #         return self.quote_relative_request_and_receive(relative_location,headers=headers,unencoded_data=unencoded_data,encoded_data=encoded_data)
     
-class DataConnection:
+class BatchConnection:
     '''
-Provides high-level database access
+Provides high-level database access for batches of records
 
 Parameters
 ----------

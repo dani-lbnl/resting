@@ -588,7 +588,7 @@ Module reference
 ================
 
 .. automodule:: rest_client
-   :members: DatabaseConnection, DataConnection
+   :members: BatchConnection, DatabaseConnection 
 '''
 
 generate(python_rst_template,website_documentation_directory + 'python.rst')
