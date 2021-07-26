@@ -295,7 +295,7 @@ dict
 class DataConnection:
     '''Provides low-level database access.'''
     def __init__(self,server,username=None,password=None):
-'''
+        '''
 Parameters
 ----------
 server: string
