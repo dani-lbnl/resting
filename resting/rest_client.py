@@ -158,7 +158,7 @@ Send HTTPS request to server and return response
 Parameters
 ----------
 relative_location : string
-    Part of the universal resource identifier, following the "https://<hostname>/" prefix
+    Part of the universal resource identifier, following the "https://''' + project.server + '''/" prefix
 
 headers : dict
     Headers to be included in HTTPS request
@@ -300,10 +300,10 @@ Parameters
 server: string
     FQDN or IP address of server running RESTInG deployment
 
-username (optional keyword argument): string 
+username: string 
     Django username for determining access
 
-password (optional keyword argument): string
+password: string
     Password associated with username
 '''
     def __init__(self,server,username=None,password=None):
@@ -371,7 +371,7 @@ filename : string
 model_name : string
     Name of corresponding model in project.models
 
-Plugin (optional keyword argument): DataPlugin
+Plugin: DataPlugin
     Plugin used to extract records from provided data file, defaults to CSVDataPlugin
 '''
         assert self.authenticated_database_connection != None, 'ERROR: username and/or password not provided for authenticated connection'
