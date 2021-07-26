@@ -158,7 +158,7 @@ Send HTTPS request to server and return response
 Parameters
 ----------
 relative_location : string
-    Part of the universal resource identifier, following the "https://''' + project.server + '''/" prefix
+    Part of the universal resource identifier, following the "https://<hostname>/" prefix
 
 headers : dict
     Headers to be included in HTTPS request
