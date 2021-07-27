@@ -14,6 +14,14 @@ fi
 APP_NAME=`$PYTHON -c "import project;print(project.app_name)"`
 cd ..
 TOP=`pwd`
+# Create skeleton Sphinx files for RESTInG documentation
+mkdir doc
+cd doc
+sphinx-quickstart -q -p 'REST Interface Generator (RESTInG)' -a 'Regents of the University of California' -v ''
+# Link in the RESTInG documentation source files
+cd source
+rm index.rst
+ln -s ../../resting_doc_source/* .
 # To provide website documentation create a working directory for Sphinx in the project directory
 cd $TOP/webserver
 mkdir doc
