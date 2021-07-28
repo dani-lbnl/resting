@@ -19,6 +19,7 @@ mkdir doc
 cd doc
 sphinx-quickstart -q -p 'REST Interface Generator (RESTInG)' -a 'Regents of the University of California' -v ''
 # Link in the RESTInG documentation source files
+rm index.rst
 ln -s ../resting_doc_source/* .
 # Use Sphinx to generate site documentation
 cd ..
