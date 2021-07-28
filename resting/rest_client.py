@@ -357,7 +357,12 @@ model_name : string
     Name of corresponding model in project.models
         '''
         # Lower model name to get around what might be a bug in Django REST Framework
-        self.authenticated_database_connection.authenticated_relative_request_and_receive(model_name.lower() + '/',unencoded_data=unencoded_data)
+        try:
+            assert project.api_prefix != ''
+        except:
+            self.authenticated_database_connection.authenticated_relative_request_and_receive(model_name.lower() + '/',unencoded_data=unencoded_data)
+        else:
+            self.authenticated_database_connection.authenticated_relative_request_and_receive(project.api_prefix + '/' + model_name.lower() + '/',unencoded_data=unencoded_data)            
 
     def upload(self,filename,model_name,Plugin=CSVDataPlugin):
         '''
@@ -381,14 +386,21 @@ Plugin: DataPlugin
         # Determine if this model has relationship fields that might require that records be processed before being stored. Users will typically not know the default primary keys of related records, so we should provide more convenient methods of referencing database records. Since this is on the client side, we cannot run Python code that directly performs queries. Finding a way to send Python code seems like security risk.
         # We will instead accept URIs that describe queries. The purpose of the filter form is so that users don't need to learn the URI query system, although it's not difficult, but remembering the identifiers might be troublesome. Lookups needed to find related objects are probably usually less involved.
         # It might be convenient to specify abbreviated lookups rather than full URIs. Before sending a request, the client should check that any URI given is either a reasonable reference to a database record or a reasonable query. If something else is given, the client should transform it into a query URI if possible. For a direct reference to a database record, we can then attempt to store the new record. For an indirect reference, perform the query, ensure that only one record is returned for a ForeignKey or OneToOneField, and then store the modified record with the direct record reference. For a ManyToManyField, we need to find out more about what is expected.
-        
+
+        try:
+            assert project.api_prefix != ''
+        except:
+            api_prefix = ''
+        else:
+            api_prefix = project.api_prefix + '/'
+       
         one_record = {}
         many_records = {}
         for attribute, parameters in project.models[model_name].items():
             if 'ForeignKey' in parameters['type'] or 'OneToOneField' in parameters['type']:
                 # Extract the name of the related model
                 match = self.model_name_re.match(parameters['type'])
-                related_model_name_lower = match.group(1).lower()
+                related_model_name_lower = api_prefix + match.group(1).lower()
 
                 # Store compiled regular expressions to recognize URIs forms that might be valid references to stored model instances or valid filter requests
                 #### These could be tightened, but they're really just a convenience to catch errors on the client side before clearly bad requests are sent
@@ -623,9 +635,17 @@ list
         filter_url = self.get_filter_url(model_name,filter_form)
         ## Authenticated connections might not be required to download, might want to make that configurable
         # Lower model_name to get around what might be a bug in Django REST Framework
+        try:
+            assert project.api_prefix != ''
+        except:
+            model_api_prefix = model_name.lower() + '/'
+        else:
+            model_api_prefix = project.api_prefix + '/' + model_name.lower() + '/'
+        
         if self.authenticated_database_connection == None:
 
-            page = self.unauthenticated_database_connection.relative_request_and_receive(model_name.lower() + '/' + filter_url)
+            page = self.unauthenticated_database_connection.relative_request_and_receive(model_api_prefix + filter_url)
+
             results = page['results']        
 
             while True:
@@ -639,7 +659,8 @@ list
             
         else:
 
-            page = self.authenticated_database_connection.authenticated_relative_request_and_receive(model_name.lower() + '/' + filter_url)
+            page = self.authenticated_database_connection.authenticated_relative_request_and_receive(model_api_prefix + filter_url) 
+                
             results = page['results']        
 
             while True:

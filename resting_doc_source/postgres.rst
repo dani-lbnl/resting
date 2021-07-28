@@ -33,5 +33,7 @@ and
 
 ``createdb -U postgres postgres``
 
+Once this is done, one must perform the steps in the initial startup procedure since all database information has been erased.
+
 Access to the database server is described in the Django configuration section of this documentation.
 
