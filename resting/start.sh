@@ -1,5 +1,5 @@
 #!/bin/sh
-# Should check for Python executable name
+# Check for Python executable name
 if python3 -V
 then
     PYTHON=python3
@@ -7,9 +7,11 @@ elif python -V
 then
     PYTHON=python
 else
-    echo Could not find Python executable
+    echo Could not find Python executable, edit start.sh and set the PYTHON variable to the executable location.
     exit
 fi
+# If this script was unable to find the Python executable, delete the if-block above and set the PYTHON variable to the executable location.
+
 # Assume that we're starting in the resting directory, should check for this
 APP_NAME=`$PYTHON -c "import project;print(project.app_name)"`
 cd ..

@@ -28,12 +28,13 @@
     * PostgreSQL is used as the database backend for the web server; setup is described in the documentation.
     
 * How to run tests
+    * TODO
 
 * Deployment instructions
     * The Docker images produced by this tool are intended for use on the NERSC Spin platform, as described in the documentation.
     
 ### Contribution guidelines ###
-
+    * Change to the resting directory and run start.sh. HTML documentation will be built in the doc/_build/html/ directory.
 * Writing tests
 * Code review
 * Other guidelines
