@@ -22,6 +22,9 @@ sphinx-quickstart -q -p 'REST Interface Generator (RESTInG)' -a 'Regents of the 
 cd source
 rm index.rst
 ln -s ../../resting_doc_source/* .
+# Use Sphinx to generate site documentation
+cd ..
+make html
 # To provide website documentation create a working directory for Sphinx in the project directory
 cd $TOP/webserver
 mkdir doc
