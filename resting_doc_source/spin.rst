@@ -7,10 +7,11 @@ Spin configuration
 
 Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 
+.. |project_id| replace:: ``m3670``
 .. |namespace| replace:: ``catalog``
-.. |database_image| replace:: ``registry.nersc.gov/m3670/acts_postgres:12``			 
+.. |database_image| replace:: ``registry.nersc.gov/`` |project_id| ``/acts_postgres:12``			 
 .. |database_password_name| replace:: ``db-password``
-.. |database_password| replace:: <fill-in-database-password>
+.. |database_password| replace:: <choose-any-valid-passwordfill-in-database-password>
 .. |secrets_directory| replace:: ``/secrets``
 .. |database_password_key| replace:: ``password`` 
 .. |database_password_path| replace:: ``password``
@@ -19,11 +20,14 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 .. |pgdata| replace:: ``/var/lib/postgres/data``
 .. Default		  
 .. |database_volume_mount_point| replace:: ``/var/lib/postgres``
+.. This is critical, as settings.py needs to know the hostname (it will be "db")
 .. |database_workload| replace:: ``db``
 .. |webserver_workload| replace:: ``webserver``
 .. |ingress_name| replace:: ``lb``				  
 .. |hostname| replace:: |ingress_name|. |namespace| ``.development.svc.spin.nersc.org``
-.. |webserver_image_tag| replace:: ``registry.nersc.gov/m3670/webserver:version``
+.. .. |hostname| replace:: |ingress_name|. |namespace| ``.production.svc.spin.nersc.org`
+
+.. |webserver_image_tag| replace:: ``registry.nersc.gov/`` |project_id| ``/webserver:version``
 .. |certificate_name| replace:: ``certificate``
 .. Default			
 .. |postgres_user| replace:: ``postgres``
@@ -31,9 +35,10 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 .. |key_file| replace:: |cname| ``.key``
 .. |certificate_file| replace:: ``covidscreen_lbl_gov.cer``
 .. |reordered_certificate_file| replace:: ``reordered_covidscreen_lbl_gov.cer``
-.. |cfs_path| replace:: ``/global/cfs/cdirs/m3670/CXR/``
-.. |source_thumbnail_path| replace:: ``/global/cfs/cdirs/m3670/www/CXR``
-      
+.. |cfs_path| replace:: ``/global/cfs/cdirs/`` |project_id| ``/CXR/``
+.. .. |source_thumbnail_path| replace:: ``/global/cfs/cdirs/`` |project_id| ``/www/CXR``
+.. |source_thumbnail_path| replace:: ``/global/cfs/projectdirs/`` |project_id| ``/CXR``
+			           
 .. These are default values
 ..      * POSTGRES_USER = |postgres_user|     
 ..      * POSTGRES_DB = |postgres_user|
@@ -42,14 +47,14 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 #. Assuming that Docker images have already been built locally, push those images to ``registry.nersc.gov``
 
    #. Open a session by running ``docker login registry.nersc.gov``
-   #. Give images suitable names by running commands of the form ``docker tag <image> registry.nersc.gov/m3670/<image>:<version>``
-   #. Or if the images will be run only using Spin, one can use the shortcut ``docker build -t registry.nersc.gov/m3670/<image>:<version>``
-   #. Push images by running commands of the form ``docker push registry.nersc.gov/m3670/<image>:<version>``
+   #. Give images suitable names by running commands of the form ``docker tag <image> registry.nersc.gov/`` |project_id| ``/<image>:<version>``
+   #. Or if the images will be run only using Spin, one can use the shortcut ``docker build -t registry.nersc.gov/`` |project_id| ``/<image>:<version>``
+   #. Push images by running commands of the form ``docker push registry.nersc.gov/`` |project_id| ``/<image>:<version>``
    #. Note that images can be managed by visiting ``registry.nersc.gov`` from a web browser
       
 #. Log in with Shibboleth at https://rancher2.spin.nersc.gov/
 
-#. Select "m3670" (for the ACTS project) from the "development" drop-down menu
+#. Select "|project_id|" (for the ACTS project) from the "development" drop-down menu
 
 #. Create a namespace
 
@@ -66,7 +71,8 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
       
       * Name: |database_password_name|
       * Key: |database_password_key|
-      * Value: |database_password|
+
+   #. For "Value," you may enter any valid password. There is no need to remember it or reenter it anywhere.
 
    #. Click "Save"   
       
@@ -184,7 +190,7 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 
 	 * Path on the Node: |cfs_path|
 	 * The Path on the Node must be: ``An existing directory``
-	 * Mount Point: /srv/static
+	 * Mount Point: /srv/static/nersc
 	 * Read-Only: Checked  
 
       #. Click on "Add Volume", click "Bind-mount a directory from the node"
@@ -200,7 +206,7 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 
       #. Expand the "Command" panel
 
-      #. For me (khiga), working on ACTS (m3670), set
+      #. For me (khiga), working on ACTS (|project_id|), set
 
 	 * User ID: 63001
 	 * Filesystem Group: 93148

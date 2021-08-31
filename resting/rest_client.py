@@ -114,7 +114,7 @@ token : string
 
         self.token = authentication_token
         
-    def request_and_receive(self,uri,headers={},unencoded_data=None,encoded_data=None):
+    def request_and_receive(self,uri,headers={},unencoded_data=None,encoded_data=None,method=None):
         '''
 Send HTTPS request to server and return response
 
@@ -143,7 +143,7 @@ dict
             encoded_data = (json.dumps(unencoded_data)).encode(encoding='utf-8')
             headers['Content-Type'] = 'application/json'
 
-        request = urllib.request.Request(url=uri,headers=headers,data=encoded_data)            
+        request = urllib.request.Request(url=uri,headers=headers,data=encoded_data,method=method)
 
         # It doesn't appear that there's any need to close a connection explicitly
         returned = urllib.request.urlopen(request)
@@ -151,7 +151,7 @@ dict
         # convert bytes to str and then to dict
         return json.loads(returned.read().decode('utf-8'))
 
-    def relative_request_and_receive(self,relative_location,headers={},unencoded_data=None,encoded_data=None):
+    def relative_request_and_receive(self,relative_location,headers={},unencoded_data=None,encoded_data=None,method=None):
         '''
 Send HTTPS request to server and return response
 
@@ -177,7 +177,7 @@ dict
 
         uri = 'https://' + self.fqdn_or_ip_address + '/' + relative_location
         
-        return self.request_and_receive(uri,headers=headers,unencoded_data=unencoded_data,encoded_data=encoded_data)
+        return self.request_and_receive(uri,headers=headers,unencoded_data=unencoded_data,encoded_data=encoded_data,method=method)
 
 #     def quote_relative_request_and_receive(self,relative_location,headers={},unencoded_data=None,encoded_data=None):
 #         '''
@@ -231,7 +231,7 @@ string
 
         return token_dict['token']
     
-    def authenticated_relative_request_and_receive(self,relative_location,headers={},unencoded_data=None,encoded_data=None):
+    def authenticated_relative_request_and_receive(self,relative_location,headers={},unencoded_data=None,encoded_data=None,method=None):
         '''
 Send HTTPS request to server, along with authentication token, and return response
 
@@ -259,7 +259,7 @@ dict
 
         headers['Authorization'] = 'Token ' + self.token
         
-        return self.relative_request_and_receive(relative_location,headers=headers,unencoded_data=unencoded_data,encoded_data=encoded_data)
+        return self.relative_request_and_receive(relative_location,headers=headers,unencoded_data=unencoded_data,encoded_data=encoded_data,method=method)
 
 #     def authenticated_quote_relative_request_and_receive(self,relative_location,headers={},unencoded_data=None,encoded_data=None):
 #         '''
@@ -360,10 +360,53 @@ model_name : string
         try:
             assert project.api_prefix != ''
         except:
-            self.authenticated_database_connection.authenticated_relative_request_and_receive(model_name.lower() + '/',unencoded_data=unencoded_data)
+            self.authenticated_database_connection.authenticated_relative_request_and_receive(model_name.lower() + '/',unencoded_data=unencoded_data,method='POST')
         else:
-            self.authenticated_database_connection.authenticated_relative_request_and_receive(project.api_prefix + '/' + model_name.lower() + '/',unencoded_data=unencoded_data)            
+            self.authenticated_database_connection.authenticated_relative_request_and_receive(project.api_prefix + '/' + model_name.lower() + '/',unencoded_data=unencoded_data,method='POST')
+            
+    def update_record(self,unencoded_data,model_name,record_id):
+        '''
+Update an existing record. The record must be directly understandable under the Django REST Framework. A ForeignKey or OneToOneField will be represented by a URI yielding the detailed view for the related record. We have not yet planned for a ManyToManyField.
 
+Parameters
+----------
+unencoded_data : dict
+    Record description
+
+model_name : string
+    Name of corresponding model in project.models
+
+record_id : integer
+    Value of auto-incrementing 'id' key field corresponding to record to be updated
+        '''
+        # Lower model name to get around what might be a bug in Django REST Framework
+        try:
+            assert project.api_prefix != ''
+        except:
+            self.authenticated_database_connection.authenticated_relative_request_and_receive(model_name.lower() + '/' + str(record_id) + '/',unencoded_data=unencoded_data,method='PUT')
+        else:
+            self.authenticated_database_connection.authenticated_relative_request_and_receive(project.api_prefix + '/' + model_name.lower() + '/' + str(record_id) + '/',unencoded_data=unencoded_data,method='PUT')
+
+    def delete_record(self,model_name,record_id):
+        '''
+Delete an existing record.
+
+Parameters
+----------
+model_name : string
+    Name of corresponding model in project.models
+
+record_id : integer
+    Value of auto-incrementing 'id' key field corresponding to record to be deleted. These numbers do not appear to be reused when new records are added.
+        '''
+        # Lower model name to get around what might be a bug in Django REST Framework
+        try:
+            assert project.api_prefix != ''
+        except:
+            self.authenticated_database_connection.authenticated_relative_request_and_receive(model_name.lower() + '/' + str(record_id) + '/',method='DELETE')
+        else:
+            self.authenticated_database_connection.authenticated_relative_request_and_receive(project.api_prefix + '/' + model_name.lower() + '/' + str(record_id) + '/',method='DELETE')
+            
     def upload(self,filename,model_name,Plugin=CSVDataPlugin):
         '''
 Upload all records in data file to server
