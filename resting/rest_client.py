@@ -371,7 +371,7 @@ model_name : string
             
     def update_record(self,unencoded_data,model_name,record_id):
         '''
-Update an existing record. The record must be directly understandable under the Django REST Framework. A ForeignKey or OneToOneField will be represented by a URI yielding the detailed view for the related record. We have not yet planned for a ManyToManyField.
+Update an existing record, returns None. The record must be directly understandable under the Django REST Framework. A ForeignKey or OneToOneField will be represented by a URI yielding the detailed view for the related record. We have not yet planned for a ManyToManyField. NOTE: The 'id' field is ignored, and all relationship fields must be specified.
 
 Parameters
 ----------
@@ -394,7 +394,7 @@ record_id : integer
 
     def delete_record(self,model_name,record_id):
         '''
-Delete an existing record.
+Delete an existing record. Returns None.
 
 Parameters
 ----------
@@ -740,3 +740,19 @@ list
 
         return results
     
+    def filtered_delete(self,model_name,filter_form):
+        '''
+Delete all records specified by filter_form, returns None.
+
+Parameters
+----------
+model_name : string
+    Name of corresponding model in project.models
+
+filter_form : dict
+    Description of filter parameters consistent with format used by self.get_filter_form()
+        '''
+
+        marked_records = self.filtered_download(model_name,filter_form)
+        for record in marked_records:
+            self.delete_record(model_name,record['id'])
