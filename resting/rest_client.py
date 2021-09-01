@@ -147,9 +147,14 @@ dict
 
         # It doesn't appear that there's any need to close a connection explicitly
         returned = urllib.request.urlopen(request)
+       
+        returned_bytes = returned.read()
 
-        # convert bytes to str and then to dict
-        return json.loads(returned.read().decode('utf-8'))
+        if len(returned_bytes) == 0:
+            return None
+        else:
+            # convert bytes to str and then to dict
+            return json.loads(returned_bytes.decode('utf-8'))
 
     def relative_request_and_receive(self,relative_location,headers={},unencoded_data=None,encoded_data=None,method=None):
         '''
