@@ -296,9 +296,9 @@ dict
         
 #         return self.quote_relative_request_and_receive(relative_location,headers=headers,unencoded_data=unencoded_data,encoded_data=encoded_data)
     
-class BatchConnection:
+class RecordConnection:
     '''
-Provides high-level database access for batches of records
+Provides high-level database access for records
 
 Parameters
 ----------
@@ -335,20 +335,34 @@ password: string
 
         self.model_descriptions = project.models
 
-    # def get_record_form(self,model_name):
+    def get_record_form(self,model_name):
+        '''
+Obtain an empty "form" for use in describing records
 
-    #     form = {}
-        
-    #     for attribute, description in self.model_descriptions[model_name].items():
-    #         attribute_type = description['type']
+Parameters
+----------
+model_name : string
+    Name of corresponding model in project.models
 
-    #         if 'Char' in attribute_type or 'Text' in attribute_type or 'URL' in attribute_type:
-    #             form[attribute] = ''
-    #         else:#    if 'Int' in attribute_type or 'Float' in attribute_type
-    #             form[attribute] = None                
-        
-    #     return form
-        
+Returns
+-------
+dictionary
+    Record description form
+'''
+        form = {}
+        for attribute,parameters in self.model_descriptions[model_name].items():
+            attribute_type = parameters['type']
+            if 'Int' in attribute_type:
+                form[attribute] = 0
+            elif 'Float' in attribute_type: 
+                form[attribute] = 0.0
+            else: #if 'Char' in attribute_type or 'Text' in attribute_type or 'URL' in attribute_type:
+                # No conversion
+                # This also catches ForeignKey, ManyToManyField, OneToOneField
+                form[attribute] = ''
+
+        return form
+    
     def upload_record(self,unencoded_data,model_name):
         '''
 Upload a single record to server. The record must be directly understandable under the Django REST Framework. A ForeignKey or OneToOneField will be represented by a URI yielding the detailed view for the related record. We have not yet planned for a ManyToManyField.
