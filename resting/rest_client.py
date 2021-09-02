@@ -753,6 +753,27 @@ list
                 results.extend(page['results'])
 
         return results
+
+    def filtered_update(self,update,model_name,filter_form):
+        '''
+Applies update routine to all records specified by filter_form, returns None.
+
+Parameters
+----------
+update : function
+    A function that takes an existing record in the form of a dict and returns an updated record in the form a dict
+
+model_name : string
+    Name of corresponding model in project.models
+
+filter_form : dict
+    Description of filter parameters consistent with format used by self.get_filter_form()
+        '''
+
+        marked_records = self.filtered_download(model_name,filter_form)
+        for record in marked_records:
+            unencoded_data = update(record)
+            self.update_record(unencoded_data,model_name,record['id'])
     
     def filtered_delete(self,model_name,filter_form):
         '''
