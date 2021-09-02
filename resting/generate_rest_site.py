@@ -487,13 +487,13 @@ docker build -t {tag_prefix}{project.app_name}_webserver:3.7 .
 '''
         
 generate(postgres_build_template,database_directory + 'build.sh')
-os.chmod(database_directory + 'build.sh',stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+os.chmod(database_directory + 'build.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IXGRP | stat.S_IXOTH)
 
 generate(website_build_template,webserver_directory + 'build.sh')
-os.chmod(webserver_directory + 'build.sh',stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+os.chmod(webserver_directory + 'build.sh',stat.S_IXUSR | stat.S_IRUSR |stat.S_IXGRP | stat.S_IXOTH)
 
 generate(finish_template,script_directory + 'finish.sh')
-os.chmod(script_directory + 'finish.sh',stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+os.chmod(script_directory + 'finish.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IXGRP | stat.S_IXOTH)
 
 ## doc.html
 
