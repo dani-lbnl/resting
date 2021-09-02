@@ -678,7 +678,7 @@ string
         
     def filtered_download(self,model_name,filter_form):
         '''
-Download all records specified by filter_form from server
+Download all records specified by filter_form from server. NOTE: filters that have not been proved as options in the project description file will be ignored and will not trigger a warning.
 
 Parameters
 ----------

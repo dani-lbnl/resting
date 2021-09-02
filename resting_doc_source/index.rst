@@ -6,5 +6,5 @@ REST Interface Generator (RESTInG) Documentation
    postgres   
    webserver
    spin
-   startup
+   standalone
 

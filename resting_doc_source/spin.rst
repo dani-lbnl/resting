@@ -9,7 +9,7 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 
 .. |project_id| replace:: ``m3670``
 .. |namespace| replace:: ``catalog``
-.. |database_image| replace:: ``registry.nersc.gov/`` |project_id| ``/acts_postgres:12``			 
+.. |database_image| replace:: ``registry.nersc.gov/`` |project_id| ``/acts_postgres:12``
 .. |database_password_name| replace:: ``db-password``
 .. |database_password| replace:: <choose-any-valid-passwordfill-in-database-password>
 .. |secrets_directory| replace:: ``/secrets``
@@ -43,13 +43,16 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 ..      * POSTGRES_USER = |postgres_user|     
 ..      * POSTGRES_DB = |postgres_user|
 ..   #. Expand the "Command" panel, confirm that "Interactive & TTY" is selected in the "Console" section
-	     
-#. Assuming that Docker images have already been built locally, push those images to ``registry.nersc.gov``
+
+#. Set ``platform = 'spin'`` in the project description file and build the Docker images locally.
+   
+#. Push those images to ``registry.nersc.gov``
 
    #. Open a session by running ``docker login registry.nersc.gov``
    #. Give images suitable names by running commands of the form ``docker tag <image> registry.nersc.gov/`` |project_id| ``/<image>:<version>``
    #. Or if the images will be run only using Spin, one can use the shortcut ``docker build -t registry.nersc.gov/`` |project_id| ``/<image>:<version>``
-   #. Push images by running commands of the form ``docker push registry.nersc.gov/`` |project_id| ``/<image>:<version>``
+   #. Push the PostgreSQL image by running ``docker push`` |database_image|
+   #. Push the web server image by running ``docker push`` |webserver_image_tag|
    #. Note that images can be managed by visiting ``registry.nersc.gov`` from a web browser
       
 #. Log in with Shibboleth at https://rancher2.spin.nersc.gov/
@@ -312,3 +315,27 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 	 * "Read-Only"
 
 #. It might take several minutes before the Spin NGINX reverse proxy server allows web connections to the |webserver_workload| container.
+
+#. After the initial deployment of a website, database, and persistent storage through the Spin system, create a website administrator user account; this is specific to a Django website and is unrelated to NERSC user accounts.
+
+   #. Select "Workloads" from the "Resources" menu, and select the "Workloads" tab.
+   
+   #. Open the "three-dot" menu corresponding to the webserver workload.
+
+   #. Select "Execute Shell."
+
+   #. In the `/srv/website`, run
+
+      #. `python manage.py makemigrations`
+   
+      #. `python manage.py migrate`      
+
+      #. `python manage.py createsuperuser` and follow the prompts to create the account.
+
+   #. One can then log into the Django admin site `https://<server_name>/admin/` using this superuser account and create regular user accounts using the web interface.
+
+   #. Upon restarting the PostgreSQL workload, it may be necessary to execute a shell and execute `/custom_entry_point.sh`.
+
+#. If one changes the project description file, such as by adding a new Django model, new database tables must be constructed. Ideally, these changes would be managed by the Django migration system. Unfortunately, we have found in practice that the system does not automatically detect the addition of a new model. If all else fails, it might be necessary to drop and initialize the database and to run `python manage.py migrate` once again, then upload the data once again, after creating the superuser account as before.
+
+#. One should also set DEBUG = False in production in the `settings.py` file

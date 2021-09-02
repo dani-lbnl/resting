@@ -4,6 +4,7 @@ import os
 import stat
 
 repository_directory = '../'
+script_directory = repository_directory + 'resting/'
 database_directory = repository_directory + 'postgres/'
 webserver_directory = repository_directory + 'webserver/'
 website_documentation_directory = webserver_directory + 'doc/'
@@ -395,22 +396,6 @@ urlpatterns = [
 
 generate(urls_template,site_directory + 'urls.py')
 
-## Currently assuming that these images will only be used with Spin
-
-postgres_build_template = f'''
-#!/bin/sh
-docker build -t registry.nersc.gov/{project.NERSC_project_id}/{project.app_name}_postgres:12 .
-'''
-generate(postgres_build_template,database_directory + 'build.sh')
-os.chmod(database_directory + 'build.sh',stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-
-website_build_template = f'''
-#!/bin/sh
-docker build -t registry.nersc.gov/{project.NERSC_project_id}/{project.app_name}_webserver:3.7 .
-'''
-generate(website_build_template,webserver_directory + 'build.sh')
-os.chmod(webserver_directory + 'build.sh',stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-
 website_dockerfile_template = f'''
 # There are version problems with mod_wsgi and psycopg2 in the latest (3.8) image, so stay with 3.7
 FROM python:3.7
@@ -442,45 +427,113 @@ CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
 '''
 generate(website_dockerfile_template,webserver_directory + 'Dockerfile')
 
+if project.platform == 'spin':
+    tag_prefix = f'registry.nersc.gov/{project.NERSC_project_id}/'
+    
+    finish_template = f'''
+# Assume that we're starting in the resting directory, should check for this
+APP_NAME={project.app_name}
+cd ..
+TOP=`pwd`
+# Generate the site documentation
+cd $TOP/webserver/doc
+make html
+# Copy the site documentation to the doc subdirectory of the app static directory
+# Might be able to just link instead
+cd $TOP/webserver/doc/_build/html
+cp -R * $TOP/webserver/website/$APP_NAME/static/$APP_NAME/doc
+cd $TOP
+# If already authenticated, this doesn't do any harm:
+docker login registry.nersc.gov
+cd postgres
+sudo ./build.sh
+docker push {tag_prefix}{project.app_name}_postgres:12
+cd ../webserver
+sudo ./build.sh
+docker push {tag_prefix}{project.app_name}_webserver:3.7
+'''
+    
+else project.platform:
+    tag_prefix = ''
+    
+    finish_template = f'''
+# Assume that we're starting in the resting directory, should check for this
+APP_NAME={project.app_name}
+cd ..
+TOP=`pwd`
+# Generate the site documentation
+cd $TOP/webserver/doc
+make html
+# Copy the site documentation to the doc subdirectory of the app static directory
+# Might be able to just link instead
+cd $TOP/webserver/doc/_build/html
+cp -R * $TOP/webserver/website/$APP_NAME/static/$APP_NAME/doc
+cd $TOP
+# Assume that there's no need to push to a repository
+cd postgres
+sudo ./build.sh
+cd ../webserver
+sudo ./build.sh
+'''
+
+postgres_build_template = f'''
+#!/bin/sh
+docker build -t {tag_prefix}{project.app_name}_postgres:12 .
+'''
+
+website_build_template = f'''
+#!/bin/sh
+docker build -t {tag_prefix}{project.app_name}_webserver:3.7 .
+'''
+        
+generate(postgres_build_template,database_directory + 'build.sh')
+os.chmod(database_directory + 'build.sh',stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+
+generate(website_build_template,webserver_directory + 'build.sh')
+os.chmod(webserver_directory + 'build.sh',stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+
+generate(finish_template,script_directory + 'finish.sh')
+os.chmod(script_directory + 'finish.sh',stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+
 ## doc.html
 
-def models():
+# def models():
 
-    return_value = ""        
+#     return_value = ""        
     
-    for model,description in project.models.items():
+#     for model,description in project.models.items():
 
-        filter_template = f'''
-class {model}Filter(rest_framework_filters.FilterSet):
-    class Meta:
-        model = {model}
-'''
+#         filter_template = f'''
+# class {model}Filter(rest_framework_filters.FilterSet):
+#     class Meta:
+#         model = {model}
+# '''
 
-        return_value += filter_template
+#         return_value += filter_template
 
-        # It appears that newlines are sometimes quoted when strings are
-        # substituted into f-strings, so build strings by concatenation here
+#         # It appears that newlines are sometimes quoted when strings are
+#         # substituted into f-strings, so build strings by concatenation here
 
-        return_value += indent + indent + 'fields = {\n'
+#         return_value += indent + indent + 'fields = {\n'
 
-        for field,parameters in description.items():
-            if parameters['filters'] != []:
-                # Skip fields with no filters
-                return_value += indent + indent + indent + f"'{field}': {str(parameters['filters'])},\n"
+#         for field,parameters in description.items():
+#             if parameters['filters'] != []:
+#                 # Skip fields with no filters
+#                 return_value += indent + indent + indent + f"'{field}': {str(parameters['filters'])},\n"
         
-        return_value += indent + indent + indent + '}\n'
+#         return_value += indent + indent + indent + '}\n'
         
-        viewset_template = f'''
-class {model}ViewSet(viewsets.ModelViewSet):
-    filter_class = {model}Filter
-    serializer_class = {model}Serializer
-    queryset = {model}.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-'''
+#         viewset_template = f'''
+# class {model}ViewSet(viewsets.ModelViewSet):
+#     filter_class = {model}Filter
+#     serializer_class = {model}Serializer
+#     queryset = {model}.objects.all()
+#     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+# '''
 
-        return_value += viewset_template
+#         return_value += viewset_template
 
-    return return_value
+#     return return_value
 
 index_rst_template = f'''
 =====================
@@ -588,83 +641,7 @@ Module reference
 ================
 
 .. automodule:: rest_client
-   :members: BatchConnection, DatabaseConnection 
+   :members: RecordConnection, DatabaseConnection 
 '''
 
 generate(python_rst_template,website_documentation_directory + 'python.rst')
-
-
-## client.py
-
-# def client_functions():
-
-#     return_value = ""
-           
-#     # Loop over all models
-#     for model, attributes in project.models.items():
-        
-#         # Create one blank form generator function for each model
-#         return_value += '\ndef get' + model + 'FilterForm():\n'
-#         return_value += indent + 'return_value = {\n'
-#         for attribute,parameters in attributes.items():
-#             return_value += indent + indent + "'" + attribute + "' : {\n"
-            
-#             for drffilter in parameters['filters']:
-
-#                 return_value += indent + indent + indent + "'" + drffilter + "' : None,\n"
-                
-#             return_value += indent + indent + indent + '},\n'
-                
-#         return_value += indent + indent + '}\n'
-#         return_value += indent + 'return return_value\n'        
-
-#         # Create one form-based data retrieval function for each model
-#         return_value += '\ndef retrieve' + model + '(filterForm):\n'
-
-#         ## Check form for validity
-
-#         # Store sequence of all permitted attributes
-#         return_value += indent + 'model_attributes =' + attribute + '\n'
-
-#         return_value += indent + 'return "' + model + '/" + generate_url_filter(model_attributes,filterForm)\n'
-#         #return_value += indent + 'url = "' + model + '/" + generate_url_filter(model_attributes,filterForm)\n'        
-        
-#         # # Loop over all attributes in the form
-#         # return_value += indent + 'for attribute in filterForm:\n'
-        
-#         # # Check that the present attribute is present in the model description
-#         # return_value += indent + indent + 'assert attribute in model_attributes, "Error: " + attribute + " is not an ' + model + ' attribute."\n'
-
-#         # # Loop over all filters associated with the present attribute in the form
-#         # return_value += indent + indent + 'for drffilter in filterForm[attribute]:\n'
-
-#         # # Check that the present filter is present in the model description
-#         # return_value += indent + indent + indent + 'assert drffilter in model_attributes[attribute]["filters"], "Error: " + drffilter + " is not a valid filter for ' + model + ' attribute " + attribute + "."\n'
-
-#         # # Add to the URL
-#         # return_value += indent + indent + indent + 'if filterForm[attribute][drffilter] != None:\n'
-
-#         # return_value += indent + indent + indent + indent + 'if type(filterForm[attribute][drffilter]) == int or type(filterForm[attribute][drffilter]) == float:\n'        
-#         # return_value += indent + indent + indent + indent + indent + 'url += attribute + "__" + drffilter + "=" + str(filterForm[attribute][drffilter]) + "&"\n'
-#         # return_value += indent + indent + indent + indent + 'elif type(filterForm[attribute][drffilter]) == str:\n'        
-#         # return_value += indent + indent + indent + indent + indent + 'url += attribute + "__" + drffilter + "=" + filterForm[attribute][drffilter] + "&"\n'
-#         # return_value += indent + indent + indent + indent + 'elif type(filterForm[attribute][drffilter]) == tuple or type(filterForm[attribute][drffilter]) == list:\n'
-#         # return_value += indent + indent + indent + indent + indent + 'url += attribute + "__" + drffilter + "="\n'
-#         # return_value += indent + indent + indent + indent + indent + 'start = True\n'        
-#         # return_value += indent + indent + indent + indent + indent + 'for value in filterForm[attribute][drffilter]:\n'
-#         # return_value += indent + indent + indent + indent + indent + indent + 'if start:\n'
-#         # return_value += indent + indent + indent + indent + indent + indent + indent + 'url += str(value)\n'
-#         # return_value += indent + indent + indent + indent + indent + indent + indent + 'start = False\n'        
-#         # return_value += indent + indent + indent + indent + indent + indent + 'else:\n'        
-#         # return_value += indent + indent + indent + indent + indent + indent + indent + 'url += "%2C" + str(value)\n'
-
-#         # return_value += indent + 'return url\n'                
-
-#     return return_value
-
-# client_template = f'''
-# import rest_client
-# {client_functions()}
-# '''
-
-# generate(client_template,'client.py')
