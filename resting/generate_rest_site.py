@@ -453,7 +453,7 @@ sudo ./build.sh
 docker push {tag_prefix}{project.app_name}_webserver:3.7
 '''
     
-else project.platform:
+else:
     tag_prefix = ''
     
     finish_template = f'''
