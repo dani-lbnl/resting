@@ -35,7 +35,7 @@ CONN_MAX_AGE = 60\
 # Database password setup should not run from the Dockerfile (as when copying static files)\
 if 'POSTGRES_PASSWORD_FILE' in os.environ:\
     with open(os.environ['POSTGRES_PASSWORD_FILE'],'r') as password_file:\
-        postgres_password = password_file.readline()\
+        postgres_password = password_file.read()\
     postgres_password_hasher = hashlib.md5()\
     postgres_password_hasher.update(postgres_password.encode())\
     hashed_postgres_password = postgres_password_hasher.hexdigest()\
