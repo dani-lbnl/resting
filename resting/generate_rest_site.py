@@ -576,7 +576,7 @@ docker build -t {tag_prefix}{project.app_name}_postgres:12 .
 
 website_build_template = f'''
 #!/bin/sh
-docker build -t {tag_prefix}{project.app_name}_webserver:3.7 .
+sudo docker build -t {tag_prefix}{project.app_name}_webserver:3.7 .
 '''
         
 generate(postgres_build_template,database_directory + 'build.sh')
