@@ -431,6 +431,7 @@ if project.platform == 'spin':
     tag_prefix = f'registry.nersc.gov/{project.NERSC_project_id}/'
     
     finish_template = f'''
+#!/bin/sh
 # Assume that we're starting in the resting directory, should check for this
 APP_NAME={project.app_name}
 cd ..
@@ -457,6 +458,7 @@ else:
     tag_prefix = ''
     
     finish_template = f'''
+#!/bin/sh
 # Assume that we're starting in the resting directory, should check for this
 APP_NAME={project.app_name}
 cd ..
@@ -475,6 +477,32 @@ sudo ./build.sh
 cd ../webserver
 sudo ./build.sh
 '''
+    # https://docs.docker.com/network/bridge/
+    local_run_template = f'''
+#!/bin/sh
+# Check that a secrets subdirectory exists
+if [[ ! -d secrets ]]
+then
+    echo 'secrets' subdirectory does not exist.
+    exit
+fi
+cd secrets
+if [[ ! -r password ]]
+then
+    echo 'password' file does not exist.
+fi
+# Create user-defined bridge network if one doesn't already exist
+if [[ `docker network ls -f name={project.app_name}_network | wc -l` -eq 1 ]]
+then
+    docker network create {project.app_name}_network
+fi
+docker run -d --network={project.app_name}_network -h db -v /secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -e PGDATA=/var/lib/postgres/data --name test acts_postgres:12
+docker run -d --network={project.app_name}_network -h ws -v /secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 8000:8000/tcp --name test acts_webserver:3.7
+#docker run -d --network={project.app_name}_network -h ws -v /secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 80:8000/tcp -p 443:443/tcp --name test acts_webserver:3.7
+'''
+
+    generate(local_run_template,script_directory + 'local_run.sh')
+    os.chmod(script_directory + 'local_run.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
 
 postgres_build_template = f'''
 #!/bin/sh
@@ -487,13 +515,13 @@ docker build -t {tag_prefix}{project.app_name}_webserver:3.7 .
 '''
         
 generate(postgres_build_template,database_directory + 'build.sh')
-os.chmod(database_directory + 'build.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IXGRP | stat.S_IXOTH)
+os.chmod(database_directory + 'build.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
 
 generate(website_build_template,webserver_directory + 'build.sh')
-os.chmod(webserver_directory + 'build.sh',stat.S_IXUSR | stat.S_IRUSR |stat.S_IXGRP | stat.S_IXOTH)
+os.chmod(webserver_directory + 'build.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
 
 generate(finish_template,script_directory + 'finish.sh')
-os.chmod(script_directory + 'finish.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IXGRP | stat.S_IXOTH)
+os.chmod(script_directory + 'finish.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
 
 ## doc.html
 

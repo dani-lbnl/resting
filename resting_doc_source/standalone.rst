@@ -3,10 +3,25 @@ Configuration on standalone servers
 
 To create a service that will run on a standalone service, rather than on a cloud-like platform such as NERSC Spin, run a RESTInG-based service, one may use the following procedure. It is assumed that the server has a working Docker installation, as on the computer on which the Docker images were generated for the Spin system.
 
+#. Create an empty working directory and move to this directory.
+
+#. Create a file named `password` containing some plaintext password in the current directory. Users will never have to reference this password directly. Both containers will mount the current directory 
+
 #. In the product description file, specify
 
    platform = 'standalone'
 
+#. Run `docker network create ...`
+   
+#. Run `docker run --add-host=db:... -d -v /secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 80:8000/tcp -p 443:443/tcp --name test acts_webserver:3.7`
+
+#. Run `docker run -d -v /secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -e PGDATA=/var/lib/postgres/data --name test acts_postgres:12`
+
+..
+  Should create password file and write or mount it into both containers
+  db must be the hostname of the postgres container, I hope that I can hardcode the IP address in the hosts file as above
+  also need to put the certificates into the container
+  
 After the initial deployment of a website, database, and persistent storage through the Spin system, create a website administrator user account; this is specific to a Django website and is unrelated to NERSC user accounts.
 
 #. Run `docker image run -it /bin/bash` to execute a shell in the container
@@ -38,3 +53,5 @@ One should also set DEBUG = False in production.
    # python manage.py createsuperuser
    # Then upload the initial metadata by going to the resting directory and running
    # python3 upload_csv.py
+   The docker run -d -p 8000:8000 notation makes apache accessible after I start it from within the container. I don't have permission to access the resource, maybe some file doesn't exist. Presumably, we could run as root and map to port 80 instead. This is from the apache log: access to /api/ denied (filesystem path '/srv/website/website') because search permissions are missing on a component of the path; however, http://127.0.0.1:7000/static/acts/home/index.html works. The problem is likely to be the database or the secret. Also, want to force HTTPS wherever something sensitive might be transmitted. Maybe going to port 80 should just redirect.
+   # might want to have the option of enforcing authenticated read access
