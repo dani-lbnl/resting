@@ -495,8 +495,8 @@ if [[ `docker network ls -f name={project.app_name}_network | wc -l` -eq 1 ]]
 then
     docker network create {project.app_name}_network
 fi
-docker run -d --network={project.app_name}_network -h db --mount type=bind,src=secrets,dst=/secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -e PGDATA=/var/lib/postgres/data --name dbacts_postgres:12
-docker run -d --network={project.app_name}_network -h ws --mount type=bind,src=secrets,dst=/secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 8000:8000/tcp --name ws acts_webserver:3.7
+docker run -d --network={project.app_name}_network -h db --mount type=bind,src={project.secrets_directory},dst=/secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -e PGDATA=/var/lib/postgres/data --name dbacts_postgres:12
+docker run -d --network={project.app_name}_network -h ws --mount type=bind,src={project.secrets_directory},dst=/secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 8000:8000/tcp --name ws acts_webserver:3.7
 #docker run -d --network={project.app_name}_network -h ws -v /secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 80:8000/tcp -p 443:443/tcp --name test acts_webserver:3.7
 # Execute shell, allowing user to perform final configuration
 docker exec -it ws /bin/bash
