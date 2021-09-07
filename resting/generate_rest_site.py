@@ -435,7 +435,8 @@ RUN apt-get update && apt-get -y install python3-djangorestframework apache2 lib
 
 ENV PYTHONPATH /usr/lib/python3/dist-packages
 
-EXPOSE 8000
+EXPOSE 80
+EXPOSE 443
 
 WORKDIR /
 
@@ -560,8 +561,7 @@ then
 fi
 # The custom entry point script expects this image to be run with the -it flags
 docker run -itd --network={project.app_name}_network -h db --mount type=bind,src={project.secrets_directory},dst=/secrets --mount type=bind,src={project.pgdata_directory},dst=/var/lib/postgres -e POSTGRES_PASSWORD_FILE=/secrets/password -e PGDATA=/var/lib/postgres/data --name db acts_postgres:12
-docker run -d --network={project.app_name}_network -h ws --mount type=bind,src={project.secrets_directory},dst=/secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 8000:8000/tcp --name ws acts_webserver:3.7
-#docker run -d --network={project.app_name}_network -h ws -v /secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 80:8000/tcp -p 443:443/tcp --name test acts_webserver:3.7
+sudo docker run -d --network={project.app_name}_network -h ws --mount type=bind,src={project.secrets_directory},dst=/secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 80:80/tcp -p 443:443/tcp --name ws acts_webserver:3.7
 # Execute shell, allowing user to perform final configuration
 docker exec -it ws /bin/bash
 '''
