@@ -483,7 +483,7 @@ sudo ./build.sh
 # Check that a secrets subdirectory exists
 if [[ ! -d {project.secrets_directory} ]]
 then
-    echo Secrets directory {project_secrets.directory} does not exist.
+    echo Secrets directory {project.secrets_directory} does not exist.
     exit
 fi
 if [[ ! -r {project.secrets_directory}/password ]]
