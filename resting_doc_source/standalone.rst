@@ -3,6 +3,8 @@ Configuration on standalone servers
 
 To create a service that will run on a standalone service, rather than on a cloud-like platform such as NERSC Spin, run a RESTInG-based service, one may use the following procedure. It is assumed that the server has a working Docker installation, as on the computer on which the Docker images were generated for the Spin system.
 
+It will be necessary to manually remove the database storage directory.
+
 #. Create an empty working directory and move to this directory.
 
 #. Create a file named `password` containing some plaintext password in the current directory. Users will never have to reference this password directly. Both containers will mount the current directory 

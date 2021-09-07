@@ -7,6 +7,7 @@ repository_directory = '../'
 script_directory = repository_directory + 'resting/'
 database_directory = repository_directory + 'postgres/'
 webserver_directory = repository_directory + 'webserver/'
+apache_directory = webserver_directory + 'apache/'
 website_documentation_directory = webserver_directory + 'doc/'
 website_directory = webserver_directory + 'website/'
 app_directory = website_directory + f'{project.app_name}/'
@@ -395,6 +396,35 @@ urlpatterns = [
 '''
 
 generate(urls_template,site_directory + 'urls.py')
+
+if project.platform != 'spin':
+    # Set up SSL
+    # See file:///usr/share/doc/apache2-doc/manual/en/ssl/ssl_howto.html
+    apache2_template = 'LoadModule ssl_module modules/mod_ssl.so'
+else:
+    apache2_template = ''
+    
+apache2_template += '''
+Alias /static/ /srv/static/
+
+<Directory /srv/static/>
+Require all granted
+</Directory>
+
+WSGIScriptAlias / /srv/website/website/wsgi.py
+
+WSGIPythonPath /srv/website
+
+<Directory /srv/website/website/>
+<Files wsgi.py>
+Require all granted
+</Files>
+</Directory>
+
+WSGIPassAuthorization On
+'''
+
+generate(apache2_template,apache_directory + 'append_to_apache2.conf')
 
 website_dockerfile_template = f'''
 # There are version problems with mod_wsgi and psycopg2 in the latest (3.8) image, so stay with 3.7
