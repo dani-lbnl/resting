@@ -401,12 +401,11 @@ if project.platform != 'spin':
     # Set up SSL
     # See file:///usr/share/doc/apache2-doc/manual/en/ssl/ssl_howto.html
     # Force redirection from http to https
+    # file:///usr/share/doc/apache2-doc/manual/en/rewrite/avoid.html
     apache2_template = f'''
 LoadModule ssl_module modules/mod_ssl.so
 Redirect "/" "https://{project.server_name}/"
 '''
-else:
-    apache2_template = ''
     ssl_template = f'''
 /^\t*SSLCertificateFile/c\
 		SSLCertificateFile	{project.ssl_certificate_file}
@@ -415,6 +414,8 @@ else:
 		SSLCertificateKeyFile {project.ssl_certificate_key_file}
 '''
     generate(ssl_template,apache_directory + 'default-ssl.conf.sed')
+else:
+    apache2_template = ''
     
 apache2_template += '''
 Alias /static/ /srv/static/
