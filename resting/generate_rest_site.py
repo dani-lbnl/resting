@@ -208,7 +208,8 @@ class {model}ViewSet(viewsets.ModelViewSet):
     filter_class = {model}Filter
     serializer_class = {model}Serializer
     queryset = {model}.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    # https://www.django-rest-framework.org/api-guide/permissions/
+    permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
 '''
 
         return_value += viewset_template
@@ -642,16 +643,6 @@ os.chmod(script_directory + 'finish.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWU
 #         return_value += indent + indent + indent + '}\n'
         
 #         viewset_template = f'''
-# class {model}ViewSet(viewsets.ModelViewSet):
-#     filter_class = {model}Filter
-#     serializer_class = {model}Serializer
-#     queryset = {model}.objects.all()
-#     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-# '''
-
-#         return_value += viewset_template
-
-#     return return_value
 
 index_rst_template = f'''
 =====================
