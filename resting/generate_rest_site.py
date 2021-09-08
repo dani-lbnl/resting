@@ -402,10 +402,12 @@ if project.platform != 'spin':
     # See file:///usr/share/doc/apache2-doc/manual/en/ssl/ssl_howto.html
     # Force redirection from http to https
     # file:///usr/share/doc/apache2-doc/manual/en/rewrite/avoid.html
-    apache2_template = f'''
-LoadModule ssl_module modules/mod_ssl.so
-Redirect "/" "https://{project.server_name}/"
-'''
+    apache2_template = 'LoadModule ssl_module modules/mod_ssl.so'
+
+    site_template = f'''
+/<VirtualHost/a\
+Redirect "/" "https://{project.server_name}/"'''
+
     ssl_template = f'''
 /^\t*SSLCertificateFile/c\
 		SSLCertificateFile	{project.ssl_certificate_file}
