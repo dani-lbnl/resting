@@ -3,6 +3,7 @@ import project
 import os
 import stat
 
+# Assuming that this is run from the resting subdirectory in the repository
 repository_directory = '../'
 script_directory = repository_directory + 'resting/'
 database_directory = repository_directory + 'postgres/'
@@ -397,7 +398,11 @@ urlpatterns = [
 
 generate(urls_template,site_directory + 'urls.py')
 
-if project.platform != 'spin':
+if project.platform == 'spin':
+    
+    apache2_template = ''
+
+else:
     # Set up SSL
     # See file:///usr/share/doc/apache2-doc/manual/en/ssl/ssl_howto.html
     # Force redirection from http to https
@@ -418,8 +423,6 @@ Redirect "/" "https://{project.server_name}/"'''
 		SSLCertificateKeyFile {project.ssl_certificate_key_file}
 '''
     generate(ssl_template,apache_directory + 'default-ssl.conf.sed')
-else:
-    apache2_template = ''
     
 apache2_template += '''
 Alias /static/ /srv/static/
@@ -443,39 +446,8 @@ WSGIPassAuthorization On
 
 generate(apache2_template,apache_directory + 'append_to_apache2.conf')
 
-if project.platform != 'spin':
-    website_dockerfile_template = f'''
-# There are version problems with mod_wsgi and psycopg2 in the latest (3.8) image, so stay with 3.7
-FROM python:3.7
+if project.platform == 'spin':
 
-RUN apt-get update && apt-get -y install python3-djangorestframework apache2 libapache2-mod-wsgi-py3 python3-djangorestframework-filters
-
-ENV PYTHONPATH /usr/lib/python3/dist-packages
-
-EXPOSE 80
-EXPOSE 443
-
-WORKDIR /
-
-# Copy in file(s) used to modify stock Apache file(s)
-COPY apache etc/apache2/
-
-# In order to access the CFS, this container will run as a NERSC user. This user will not have root privileges in this container, but will be in the root group. Some directory and file permissions must be changed in order for this user to run Apache properly.
-# Apache configuration is done here through modification of the stock configuration files.
-# Django is then directed to create the skeleton website
-# This was the source of a helpful tip for standalone hosting: https://serverfault.com/questions/1046774/ah00035-access-to-denied-403-forbidden-django-mod-wsgi
-RUN umask 007 && chmod -R g+w /var/run/apache2 && chgrp -R root /var/log/apache2 && chmod -R g+w /var/log/apache2 && cd /etc/apache2 && cat append_to_apache2.conf >> apache2.conf && cd sites-available && mv default-ssl.conf default-ssl.conf.original && mv 000-default.conf 000-default.conf.original && sed -f ../default-ssl.conf.sed default-ssl.conf.original > default-ssl.conf && sed -f ../000-default.conf.sed 000-default.conf.original > 000-default.conf && cd ../sites-enabled && ln -s /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf && ln -s /etc/apache2/mods-available/ssl.conf /etc/apache2/mods-enabled && ln -s /etc/apache2/mods-available/socache_shmcb.load /etc/apache2/mods-enabled && ln -s /etc/apache2/mods-available/ssl.load /etc/apache2/mods-enabled && chmod g+rwx /srv && cd /srv && mkdir static && chmod o+x static && chmod g+rwx static && django-admin startproject website && chmod g+rwx website && chmod a+rx website && cd website && python manage.py startapp {project.app_name}
-
-# Now that the website skeleton exists, copy in files for customization
-COPY website srv/website/
-
-# Modify stock files and copy static files
-RUN cp /srv/website/templates/* /usr/lib/python3/dist-packages/rest_framework/templates/rest_framework/ && cd /srv/website/website && mv settings.py dist_settings.py && sed -f sed_script_settings.py dist_settings.py > settings.py && echo "INSTALLED_APPS.append('{project.app_name}.apps.{project.app_name.capitalize()}Config')" >> settings.py && cd /srv/website && python manage.py collectstatic
-
-# Run the web server in the foreground so that the container does not immediately exit
-CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
-'''
-else:
     website_dockerfile_template = f'''
 # There are version problems with mod_wsgi and psycopg2 in the latest (3.8) image, so stay with 3.7
 FROM python:3.7
@@ -506,6 +478,40 @@ RUN cp /srv/website/templates/* /usr/lib/python3/dist-packages/rest_framework/te
 # Run the web server in the foreground so that the container does not immediately exit
 CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
 '''
+else:
+    website_dockerfile_template = f'''
+# There are version problems with mod_wsgi and psycopg2 in the latest (3.8) image, so stay with 3.7
+FROM python:3.7
+
+RUN apt-get update && apt-get -y install python3-djangorestframework apache2 libapache2-mod-wsgi-py3 python3-djangorestframework-filters
+
+ENV PYTHONPATH /usr/lib/python3/dist-packages
+
+EXPOSE 80
+EXPOSE 443
+
+WORKDIR /
+
+# Copy in file(s) used to configure the web server
+COPY apache etc/apache2/
+COPY ssl etc/ssl/
+
+# In order to access the CFS, this container will run as a NERSC user. This user will not have root privileges in this container, but will be in the root group. Some directory and file permissions must be changed in order for this user to run Apache properly.
+# Apache configuration is done here through modification of the stock configuration files.
+# Django is then directed to create the skeleton website
+# This was the source of a helpful tip for standalone hosting: https://serverfault.com/questions/1046774/ah00035-access-to-denied-403-forbidden-django-mod-wsgi
+RUN umask 007 && chmod -R g+w /var/run/apache2 && chgrp -R root /var/log/apache2 && chmod -R g+w /var/log/apache2 && cd /etc/apache2 && cat append_to_apache2.conf >> apache2.conf && cd sites-available && mv default-ssl.conf default-ssl.conf.original && mv 000-default.conf 000-default.conf.original && sed -f ../default-ssl.conf.sed default-ssl.conf.original > default-ssl.conf && sed -f ../000-default.conf.sed 000-default.conf.original > 000-default.conf && cd ../sites-enabled && ln -s /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf && ln -s /etc/apache2/mods-available/ssl.conf /etc/apache2/mods-enabled && ln -s /etc/apache2/mods-available/socache_shmcb.load /etc/apache2/mods-enabled && ln -s /etc/apache2/mods-available/ssl.load /etc/apache2/mods-enabled && chmod g+rwx /srv && cd /srv && mkdir static && chmod o+x static && chmod g+rwx static && django-admin startproject website && chmod g+rwx website && chmod a+rx website && cd website && python manage.py startapp {project.app_name}
+
+# Now that the website skeleton exists, copy in files for customization
+COPY website srv/website/
+
+# Modify stock files and copy static files
+RUN cp /srv/website/templates/* /usr/lib/python3/dist-packages/rest_framework/templates/rest_framework/ && cd /srv/website/website && mv settings.py dist_settings.py && sed -f sed_script_settings.py dist_settings.py > settings.py && echo "INSTALLED_APPS.append('{project.app_name}.apps.{project.app_name.capitalize()}Config')" >> settings.py && cd /srv/website && python manage.py collectstatic
+
+# Run the web server in the foreground so that the container does not immediately exit
+CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
+'''
+    
 generate(website_dockerfile_template,webserver_directory + 'Dockerfile')
 
 if project.platform == 'spin':

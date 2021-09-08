@@ -3,32 +3,30 @@ Configuration on standalone servers
 
 To create a service that will run on a standalone service, rather than on a cloud-like platform such as NERSC Spin, run a RESTInG-based service, one may use the following procedure. It is assumed that the server has a working Docker installation, as on the computer on which the Docker images were generated for the Spin system.
 
-It will be necessary to manually remove the database storage directory.
+#. Clone the RESTInG repository.
 
-#. Create an empty working directory and move to this directory.
+#. Create a project description file
+   #. Set `platform = 'standalone'`.
+   #. Set `secrets_directory` and `pgdata_directory` to directories on the host filesystem that are to contain the database password file and to store the data within the database, respectively.
+   #. Set `ssl_certificate_file` and `ssl_certificate_key_file` to the locations of the SSL certificate and private key, within the Docker image; note that the contents of `webserver/ssl` directory of the repository are automatically and recursively copied onto the `/etc/ssl` directory in the Docker image.
 
-#. Create a file named `password` containing some plaintext password in the current directory. Users will never have to reference this password directly. Both containers will mount the current directory 
+#. Create a file named `password` within the `secrets_directory` specified above. This file should contain some plaintext password. Users will never have to reference this password directly. Both containers will automatically mount the directory to obtain access to the password.
 
-#. In the product description file, specify
-
-   platform = 'standalone'
-
-#. Run `docker network create ...`
+#. Change to the `resting` directory within the repository.
    
-#. Run `docker run --add-host=db:... -d -v /secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 80:8000/tcp -p 443:443/tcp --name test acts_webserver:3.7`
+#. Run `start.sh` to generate the basic service description files.
 
-#. Run `docker run -d -v /secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -e PGDATA=/var/lib/postgres/data --name test acts_postgres:12`
+#. Perform any desired modifications to the service description files.
 
-..
-  Should create password file and write or mount it into both containers
-  db must be the hostname of the postgres container, I hope that I can hardcode the IP address in the hosts file as above
-  also need to put the certificates into the container
-  
+#. Run `finish.sh` to generate the Docker images.
+
+#. Run `local_run.sh` to start the Docker containers on the present computer.
+
 After the initial deployment of a website, database, and persistent storage through the Spin system, create a website administrator user account; this is specific to a Django website and is unrelated to NERSC user accounts.
 
-#. Run `docker image run -it /bin/bash` to execute a shell in the container
+#. Run `docker exec -it ws /bin/bash` to execute a shell in the container
 
-#. In the `/srv/website`, run
+#. In `/srv/website`, run
 
    #. `python manage.py makemigrations`
 
