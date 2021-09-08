@@ -408,6 +408,8 @@ if project.platform != 'spin':
 /<VirtualHost/a\
 Redirect "/" "https://{project.server_name}/"'''
 
+    generate(site_template,apache_directory + '000-default.conf.sed')
+    
     ssl_template = f'''
 /^\t*SSLCertificateFile/c\
 		SSLCertificateFile	{project.ssl_certificate_file}
@@ -462,7 +464,7 @@ COPY apache etc/apache2/
 # Apache configuration is done here through modification of the stock configuration files.
 # Django is then directed to create the skeleton website
 # This was the source of a helpful tip for standalone hosting: https://serverfault.com/questions/1046774/ah00035-access-to-denied-403-forbidden-django-mod-wsgi
-RUN umask 007 && chmod -R g+w /var/run/apache2 && chgrp -R root /var/log/apache2 && chmod -R g+w /var/log/apache2 && cd /etc/apache2 && cat append_to_apache2.conf >> apache2.conf && cd sites-available && mv default-ssl.conf default-ssl.conf.original && sed -f ../default-ssl.conf.sed default-ssl.conf.original > default-ssl.conf && cd ../sites-enabled && ln -s /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf && ln -s /etc/apache2/mods-available/ssl.conf /etc/apache2/mods-enabled && ln -s /etc/apache2/mods-available/socache_shmcb.load /etc/apache2/mods-enabled && ln -s /etc/apache2/mods-available/ssl.load /etc/apache2/mods-enabled && chmod g+rwx /srv && cd /srv && mkdir static && chmod o+x static && chmod g+rwx static && django-admin startproject website && chmod g+rwx website && chmod a+rx website && cd website && python manage.py startapp {project.app_name}
+RUN umask 007 && chmod -R g+w /var/run/apache2 && chgrp -R root /var/log/apache2 && chmod -R g+w /var/log/apache2 && cd /etc/apache2 && cat append_to_apache2.conf >> apache2.conf && cd sites-available && mv default-ssl.conf default-ssl.conf.original && mv 000-default.conf 000-default.conf.original && sed -f ../default-ssl.conf.sed default-ssl.conf.original > default-ssl.conf && sed -f ../000-default.conf.sed 000-default.conf.original > 000-default.conf && cd ../sites-enabled && ln -s /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf && ln -s /etc/apache2/mods-available/ssl.conf /etc/apache2/mods-enabled && ln -s /etc/apache2/mods-available/socache_shmcb.load /etc/apache2/mods-enabled && ln -s /etc/apache2/mods-available/ssl.load /etc/apache2/mods-enabled && chmod g+rwx /srv && cd /srv && mkdir static && chmod o+x static && chmod g+rwx static && django-admin startproject website && chmod g+rwx website && chmod a+rx website && cd website && python manage.py startapp {project.app_name}
 
 # Now that the website skeleton exists, copy in files for customization
 COPY website srv/website/
