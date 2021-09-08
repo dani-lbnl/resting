@@ -550,6 +550,8 @@ else:
 APP_NAME={project.app_name}
 cd ..
 TOP=`pwd`
+# Seems to be necessary to allow the postgres user in the Postgres container to run initdb
+chmod a+w {project.pgdata_directory}
 # Generate the site documentation
 cd $TOP/webserver/doc
 make html
