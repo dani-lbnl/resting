@@ -62,5 +62,5 @@ STATIC_ROOT = '/srv/static/'\
 STATICFILES_DIRS = [\
    '/usr/lib/python3/dist-packages/django/contrib/admin/static/',\
    '/usr/lib/python3/dist-packages/rest_framework/static/'\
-   ]
-
+   ]\
+#DEBUG = False

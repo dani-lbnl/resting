@@ -568,7 +568,7 @@ cd ../webserver
 sudo ./build.sh
 '''
     # https://docs.docker.com/network/bridge/
-    local_run_template = f'''
+    run_template = f'''
 #!/bin/sh
 # Check that a secrets subdirectory exists
 if [[ ! -d {project.secrets_directory} ]]
@@ -592,8 +592,8 @@ sudo docker run -d --network={project.app_name}_network -h ws --mount type=bind,
 docker exec -it ws /bin/bash
 '''
 
-    generate(local_run_template,script_directory + 'local_run.sh')
-    os.chmod(script_directory + 'local_run.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
+    generate(run_template,script_directory + 'run.sh')
+    os.chmod(script_directory + 'run.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
 
 postgres_build_template = f'''
 #!/bin/sh
