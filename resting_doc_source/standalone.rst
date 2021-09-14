@@ -43,7 +43,7 @@ To create a service that will run on a standalone service, rather than on a clou
       
 #. Run `resting/stop.sh` to stop the Docker containers, or `resting/stop_db.sh` and `resting/stop_ws.sh` to stop the database and web server containers separately.
 
-#. Run `resting/restart.sh` to stop and restart the Docker containers, or `resting/restart_db.sh` and `resting/restart_we.sh` to stop and restart the database and web server containers separately.
+#. Run `resting/rerun.sh` to stop and rerun the Docker containers, or `resting/rerun_db.sh` and `resting/rerun_we.sh` to stop and rerun the database and web server containers separately. This is useful in using newly generated Docker images to replace older containers.
 
 #. Run `resting/rm.sh` to remove the Docker containers, or `resting/rm_db.sh` and `resting/rm_ws.sh` to remove the database and web server containers separately.
       
