@@ -598,13 +598,13 @@ docker exec -it ws /bin/bash
     run_db_template = f'''
 docker run -itd --network={project.app_name}_network -h db --mount type=bind,src={project.secrets_directory},dst=/secrets --mount type=bind,src={project.pgdata_directory},dst=/var/lib/postgres -e POSTGRES_PASSWORD_FILE=/secrets/password -e PGDATA=/var/lib/postgres/data --name db acts_postgres:12
 '''
-    generate(run_template,script_directory + 'run_db.sh')
+    generate(run_db_template,script_directory + 'run_db.sh')
     os.chmod(script_directory + 'run_db.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
 
     run_ws_template = f'''
 sudo docker run -d --network={project.app_name}_network -h ws --mount type=bind,src={project.secrets_directory},dst=/secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 80:80/tcp -p 443:443/tcp --name ws acts_webserver:3.7
 '''
-    generate(run_template,script_directory + 'run_ws.sh')
+    generate(run_ws_template,script_directory + 'run_ws.sh')
     os.chmod(script_directory + 'run_ws.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
     
 postgres_build_template = f'''
