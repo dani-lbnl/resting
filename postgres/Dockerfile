@@ -6,6 +6,6 @@ WORKDIR /
 RUN cd /etc && mv passwd dist_passwd && sed 's/sql/s/' dist_passwd > passwd
 
 # This script is run automatically and creates the database if it does not yet exist, and starts the database in any case
-COPY custom_entry_point.sh custom_entry_point.sh
+COPY copy /
 
 CMD ["/custom_entry_point.sh"]
