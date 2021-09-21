@@ -28,7 +28,7 @@
     * PostgreSQL is used as the database backend for the web server; setup is described in the documentation.
     
 * How to run tests
-    * TODO
+    * The "resting/project.py" file included in the repository can be used to generate a service that runs locally and which can be used as a basis for automated testing. Most users will not need to run these tests; they are aimed at assisting RESTInG developers. The "resting/test.sh" script builds the Docker images for local use. 
 
 * Deployment instructions
     * The Docker images produced by this tool are intended for use on the NERSC Spin platform, as described in the documentation.

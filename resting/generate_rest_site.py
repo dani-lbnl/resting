@@ -589,7 +589,7 @@ fi
 . run_db.sh
 . run_ws.sh
 # Execute shell, allowing user to perform final configuration
-docker exec -it ws /bin/bash
+docker exec -it ws /bin/bash /initialize.sh
 '''
 
     generate(run_template,script_directory + 'run.sh')
@@ -606,7 +606,7 @@ sudo docker run -d --network={project.app_name}_network -h ws --mount type=bind,
 '''
     generate(run_ws_template,script_directory + 'run_ws.sh')
     os.chmod(script_directory + 'run_ws.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
-    
+
 postgres_build_template = f'''
 #!/bin/sh
 docker build -t {tag_prefix}{project.app_name}_postgres:12 .

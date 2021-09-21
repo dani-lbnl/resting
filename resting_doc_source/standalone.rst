@@ -1,7 +1,7 @@
 Configuration on standalone servers
 ===================================
 
-To create a service that will run on a standalone service, rather than on a cloud-like platform such as NERSC Spin, run a RESTInG-based service, one may use the following procedure. It is assumed that the server has a working Docker installation, as on the computer on which the Docker images were generated for the Spin system.
+To create a service that will run on a standalone service, rather than on a cloud-like platform such as NERSC Spin, one may use the following procedure. It is assumed that the server has a working Docker installation, as on the computer on which the Docker images were generated for the Spin system.
 
 #. Clone the RESTInG repository.
 
