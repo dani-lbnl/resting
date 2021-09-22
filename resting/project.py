@@ -111,7 +111,7 @@ models = {
             'filters' : [],
             },
         'manytomanyfield' : {
-            'type' : 'models.ManyToManyField(Independent,related_name="manytomanyfield",on_delete=models.CASCADE)',
+            'type' : 'models.ManyToManyField(Independent,related_name="manytomanyfield")',
             'filters' : [],
             },
         },
