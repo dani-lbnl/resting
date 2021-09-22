@@ -10,7 +10,10 @@ else
     echo Could not find Python executable, edit start.sh and set the PYTHON variable to the executable location.
     exit
 fi
-/bin/sh start.sh
-/bin/sh finish.sh
-/bin/sh run.sh
+CWD=`pwd`
+. start.sh
+cd $CWD
+. finish.sh
+cd $CWD
+. run.sh
 $PYTHON tests.py
