@@ -43,7 +43,7 @@ for header in greatest_lengths:
             max_length_end_position = type_string.find(',',max_length_keyword_position+11)
             max_length = int(type_string[max_length_keyword_position+11:max_length_end_position])
             if max_length < greatest_lengths[header]:
-                print(header,max_length)
+                print(header,'field length is too short')
     except:
         pass
 
