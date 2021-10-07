@@ -25,7 +25,7 @@ The `models` dictionary has the format::
       }, ...
   }
 
-Each entry in the dictionary corresponds to a Django model / database table that will be automatically created. The key of each entry is a string that will be the model name. The value of each model entry is itself a dictionary with entries corresponding to the model attributes.
+Each entry in the dictionary corresponds to a Django model / database table that will be automatically created. The key of each entry is a string that will be the model name; the contents of the string must be a valid Python identifier and must not contain a sequence of two underscores, since those are interpreted as filters. The value of each model entry is itself a dictionary with entries corresponding to the model attributes.
 
 In these model attribute dictionaries, each entry corresponds to a single attribute. The key of each entry is a string that will name the attribute, and the value is a dictionary containing additional information about the attribute. Although the keys are specified as strings, it is important to note that the contents of the strings must be valid Python identifiers because of the way in which they are used to generate Python code.
 
@@ -35,31 +35,31 @@ Please note that arbitrary Python code could be included in the `'type'` strings
 
 As an example, this structure defines a database that stores only one type of Django model, named `Source`, with five different types of fields::
 
-models = {
-    'Source':{
-        'patientid' : {
-            'type' : 'models.CharField(max_length=32,blank=True)',
-            'filters' : ['iexact','in','istartswith','icontains','iendswith','ir
-egex','search'],
+  models = {
+      'Source':{
+          'patientid' : {
+              'type' : 'models.CharField(max_length=32,blank=True)',
+              'filters' : ['iexact','in','istartswith','icontains','iendswith','iregex','search'],
             },
-	'age' : {
-            'type' : 'models.IntegerField(null=True,blank=True)',
-            'filters' : ['isnull','exact','gte','lte'],
+	  'age' : {
+              'type' : 'models.IntegerField(null=True,blank=True)',
+              'filters' : ['isnull','exact','gte','lte'],
             },
-	'temperature' : {
-            'type' : 'models.FloatField(null=True,blank=True)',
-            'filters' : ['isnull','gte','lte'],
+	  'temperature' : {
+              'type' : 'models.FloatField(null=True,blank=True)',
+              'filters' : ['isnull','gte','lte'],
             },
-	'url' : {
-            'type' : 'models.URLField(max_length=256,blank=True)',
-            'filters' : ['iexact','in','istartswith','icontains','iendswith','iregex','search'],
+	  'url' : {
+              'type' : 'models.URLField(max_length=256,blank=True)',
+              'filters' : ['iexact','in','istartswith','icontains','iendswith','iregex','search'],
             },
-        'notes': {
-            'type': 'models.TextField(max_length=1024,blank=True)',
-            'filters': ['iexact','in','istartswith','icontains','iendswith','iregex','search']
+          'notes': {
+              'type': 'models.TextField(max_length=1024,blank=True)',
+              'filters': ['iexact','in','istartswith','icontains','iendswith','iregex','search']
             },
 	}
-
+    }
+	
 In the `models` dictionary, there must be at least one model (such as the one in the above example) for which it is not necessary to specify any attributes mapping to other models. We will call these "independent" models. Other models which reference the independent models will be called "dependent" models. Data for independent models must be saved in the database before they can be referenced by dependent models. If the `models` descriptions allow relationship fields to be left blank (with `null = True, blank = True` field parameter settings in `project.py`), incomplete dependent model entries can be made and later updated. However, in most cases, it is likely to be more convenient to specify model relationships during the creation of ``later'' model instances. The relationships are expressed in the form of Django query calls, which we will discuss in detail later.
 .. One can then specify all attributes of later models, including relationships to model records already stored in the database, in single files that can then be easily transformed into database records.
 

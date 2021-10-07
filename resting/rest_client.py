@@ -426,7 +426,7 @@ record_id : integer
         else:
             self.authenticated_database_connection.authenticated_relative_request_and_receive(project.api_prefix + '/' + model_name.lower() + '/' + str(record_id) + '/',method='DELETE')
             
-    def upload(self,filename,model_name,Plugin=CSVDataPlugin):
+    def upload(self,filename,model_name,Plugin=CSVDataPlugin,skip_empty=[]):
         '''
 Upload all records in data file to server
 
@@ -563,7 +563,12 @@ Plugin: DataPlugin
                 else:
                     processed_unencoded_data[key] = value
 
-            self.upload_record(processed_unencoded_data,model_name)
+            skip = False
+            for key in skip_empty:
+                if processed_unencoded_data[key] == '' or processed_unencoded_data[key] = None:
+                    skip = True
+            if not skip:
+                self.upload_record(processed_unencoded_data,model_name)
         
         source.close()
 
