@@ -565,7 +565,7 @@ Plugin: DataPlugin
 
             skip = False
             for key in skip_empty:
-                if processed_unencoded_data[key] == '' or processed_unencoded_data[key] = None:
+                if processed_unencoded_data[key] == '' or processed_unencoded_data[key] == None:
                     skip = True
             if not skip:
                 self.upload_record(processed_unencoded_data,model_name)
