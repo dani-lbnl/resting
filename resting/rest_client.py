@@ -379,9 +379,15 @@ model_name : string
         try:
             assert project.api_prefix != ''
         except:
-            self.authenticated_database_connection.authenticated_relative_request_and_receive(model_name.lower() + '/',unencoded_data=unencoded_data,method='POST')
+            try:
+                self.authenticated_database_connection.authenticated_relative_request_and_receive(model_name.lower() + '/',unencoded_data=unencoded_data,method='POST')
+            except urllib.error.HTTPError as exception:
+                print(unencoded_data,exception)
         else:
-            self.authenticated_database_connection.authenticated_relative_request_and_receive(project.api_prefix + '/' + model_name.lower() + '/',unencoded_data=unencoded_data,method='POST')
+            try:
+                self.authenticated_database_connection.authenticated_relative_request_and_receive(project.api_prefix + '/' + model_name.lower() + '/',unencoded_data=unencoded_data,method='POST')
+            except urllib.error.HTTPError as exception:
+                print(unencoded_data,exception)
             
     def update_record(self,unencoded_data,model_name,record_id):
         '''
@@ -480,7 +486,6 @@ Plugin: DataPlugin
         # It appears that the serializers only handle one dictionary-like object at a time, so generate a dictionary from each record and store it.
         processed_unencoded_data = {}
         for unprocessed_unencoded_data in source:
-
             # Skip bad lines
             if unprocessed_unencoded_data == None:
                 continue
@@ -505,9 +510,14 @@ Plugin: DataPlugin
                         # Make the query request and confirm that only a single record is returned
                         matches = self.path_download(path)
                         #### should have a friendlier way of catching bad queries
+                        print(path)
+                        print(matches)
+                        #print(matches[0])
+                        #print(matches[1])
+                        #exit()
                         assert len(matches) == 1
                         # It seems that Django represents references to objects using HTTP, not HTTPS
-                        processed_unencoded_data[key] = 'http://' + self.server + '/' + one_record[key]['related_model_name_lower'] + '/' + str(matches[0]['id']) + '/'
+                        processed_unencoded_data[key] = 'https://' + self.server + '/' + one_record[key]['related_model_name_lower'] + '/' + str(matches[0]['id']) + '/'
                     else:
                         #### no usable model reference information has been provided
                         #### should make it easy for users to find the erroneous entry
@@ -549,7 +559,7 @@ Plugin: DataPlugin
                             for match in matches:
 
                                 # It seems that Django represents references to objects using HTTP, not HTTPS
-                                urls.append('http://' + self.server + '/' + many_records[key]['related_model_name_lower'] + '/' + str(matches[0]['id']) + '/')
+                                urls.append('https://' + self.server + '/' + many_records[key]['related_model_name_lower'] + '/' + str(matches[0]['id']) + '/')
                                 
                         processed_unencoded_data[key] = urls
                         

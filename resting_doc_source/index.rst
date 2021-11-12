@@ -2,7 +2,7 @@ REST Interface Generator (RESTInG) Documentation
 ================================================
 
 .. toctree::
-   local_docker_setup
+   setup
    postgres   
    webserver
    spin

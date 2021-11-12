@@ -239,6 +239,9 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 #. Generate an SSL/TLS certificate request
 
    #. Run ``generate.sh`` in the ``certificate`` directory, entering relevant identifying information
+   #. Or on a system with openssl run a command of the form::
+      
+      openssl req -new -newkey rsa:2048 -nodes -addext "subjectAltName = DNS:covidsceen-dev.lbl.gov" -keyout covidscreen.lbl.gov.key -out covidscreen.lbl.gov.csr
 
 #. Request an SSL/TLS certificate
 
