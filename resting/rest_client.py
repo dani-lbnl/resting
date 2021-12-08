@@ -146,10 +146,12 @@ dict
         request = urllib.request.Request(url=uri,headers=headers,data=encoded_data,method=method)
 
         # It doesn't appear that there's any need to close a connection explicitly
-        returned = urllib.request.urlopen(request)
-       
+        try:
+            returned = urllib.request.urlopen(request)
+        except urllib.error.HTTPError as exception:
+            print('ERROR:',request.data,exception)
+            return None
         returned_bytes = returned.read()
-
         if len(returned_bytes) == 0:
             return None
         else:
@@ -377,17 +379,12 @@ model_name : string
         '''
         # Lower model name to get around what might be a bug in Django REST Framework
         try:
+            # api_prefix might not even be defined
             assert project.api_prefix != ''
         except:
-            try:
-                self.authenticated_database_connection.authenticated_relative_request_and_receive(model_name.lower() + '/',unencoded_data=unencoded_data,method='POST')
-            except urllib.error.HTTPError as exception:
-                print(unencoded_data,exception)
+            return self.authenticated_database_connection.authenticated_relative_request_and_receive(model_name.lower() + '/',unencoded_data=unencoded_data,method='POST')
         else:
-            try:
-                self.authenticated_database_connection.authenticated_relative_request_and_receive(project.api_prefix + '/' + model_name.lower() + '/',unencoded_data=unencoded_data,method='POST')
-            except urllib.error.HTTPError as exception:
-                print(unencoded_data,exception)
+            return self.authenticated_database_connection.authenticated_relative_request_and_receive(project.api_prefix + '/' + model_name.lower() + '/',unencoded_data=unencoded_data,method='POST')
             
     def update_record(self,unencoded_data,model_name,record_id):
         '''
@@ -406,12 +403,37 @@ record_id : integer
         '''
         # Lower model name to get around what might be a bug in Django REST Framework
         try:
+            # api_prefix might not even be defined            
             assert project.api_prefix != ''
         except:
             self.authenticated_database_connection.authenticated_relative_request_and_receive(model_name.lower() + '/' + str(record_id) + '/',unencoded_data=unencoded_data,method='PUT')
         else:
             self.authenticated_database_connection.authenticated_relative_request_and_receive(project.api_prefix + '/' + model_name.lower() + '/' + str(record_id) + '/',unencoded_data=unencoded_data,method='PUT')
 
+    def update_or_upload_record(self,unencoded_data,model_name,record_id):
+        '''
+Update an existing record, returns None. The record must be directly understandable under the Django REST Framework. A ForeignKey or OneToOneField will be represented by a URI yielding the detailed view for the related record. We have not yet planned for a ManyToManyField. NOTE: The 'id' field is ignored, and all relationship fields must be specified.
+
+Parameters
+----------
+unencoded_data : dict
+    Record description
+
+model_name : string
+    Name of corresponding model in project.models
+
+record_id : integer
+    Value of auto-incrementing 'id' key field corresponding to record to be updated
+        '''
+        # Lower model name to get around what might be a bug in Django REST Framework
+        try:
+            # api_prefix might not even be defined            
+            assert project.api_prefix != ''
+        except:
+            self.authenticated_database_connection.authenticated_relative_request_and_receive(model_name.lower() + '/' + str(record_id) + '/',unencoded_data=unencoded_data,method='PUT')
+        else:
+            self.authenticated_database_connection.authenticated_relative_request_and_receive(project.api_prefix + '/' + model_name.lower() + '/' + str(record_id) + '/',unencoded_data=unencoded_data,method='PUT')
+            
     def delete_record(self,model_name,record_id):
         '''
 Delete an existing record. Returns None.
@@ -432,7 +454,7 @@ record_id : integer
         else:
             self.authenticated_database_connection.authenticated_relative_request_and_receive(project.api_prefix + '/' + model_name.lower() + '/' + str(record_id) + '/',method='DELETE')
             
-    def upload(self,filename,model_name,Plugin=CSVDataPlugin,skip_empty=[]):
+    def upload(self,filename,model_name,record_numbers=[],Plugin=CSVDataPlugin,skip_empty=[]):
         '''
 Upload all records in data file to server
 
@@ -482,14 +504,21 @@ Plugin: DataPlugin
                 # Store compiled regular expressions to recognize URIs forms that might be valid references to stored model instances or valid filter requests
                 #### These could be tightened, but they're really just a convenience to catch errors on the client side before clearly bad requests are sent
                 many_records[attribute] = {'related_model_name_lower':related_model_name_lower, 'direct_re':re.compile(r'^(\s*https?://' + self.server_re + '/' + related_model_name_lower + '/\d+/\s*)*$'), 'indirect_re':re.compile(r'^\s*(([A-Za-z_]+=.*?&)*[A-Za-z_]+=.*?[^/]\s*)*$|^\s*(https?://' + self.server_re + '/' + related_model_name_lower + '/\?([A-Za-z_]+=.*?&)*[A-Za-z_]+=.*?[^/]\s*)*$')}
-                
+
+        failure_list = []
         # It appears that the serializers only handle one dictionary-like object at a time, so generate a dictionary from each record and store it.
         processed_unencoded_data = {}
+        record_number = -1
         for unprocessed_unencoded_data in source:
+            record_number += 1
             # Skip bad lines
             if unprocessed_unencoded_data == None:
+                print('ERROR: Bad record',record_number)
+                failure_list.append(record_number)
                 continue
-
+            if record_numbers != [] and record_number not in record_numbers:
+                continue
+            
             for key, value in unprocessed_unencoded_data.items():
 
                 if key in one_record:
@@ -510,11 +539,6 @@ Plugin: DataPlugin
                         # Make the query request and confirm that only a single record is returned
                         matches = self.path_download(path)
                         #### should have a friendlier way of catching bad queries
-                        print(path)
-                        print(matches)
-                        #print(matches[0])
-                        #print(matches[1])
-                        #exit()
                         assert len(matches) == 1
                         # It seems that Django represents references to objects using HTTP, not HTTPS
                         processed_unencoded_data[key] = 'https://' + self.server + '/' + one_record[key]['related_model_name_lower'] + '/' + str(matches[0]['id']) + '/'
@@ -522,7 +546,6 @@ Plugin: DataPlugin
                         #### no usable model reference information has been provided
                         #### should make it easy for users to find the erroneous entry
                         #### should make it easy to not add duplicate entries and to remove duplicates
-                        print(processed_unencoded_data)
                         raise AssertionError('Bad related model specification')
 
                 elif key in many_records:
@@ -567,7 +590,6 @@ Plugin: DataPlugin
                         #### no usable model reference information has been provided
                         #### should make it easy for users to find the erroneous entry
                         #### should make it easy to not add duplicate entries and to remove duplicates
-                        print(value)
                         raise AssertionError('Bad related model specification')
 
                 else:
@@ -578,9 +600,14 @@ Plugin: DataPlugin
                 if processed_unencoded_data[key] == '' or processed_unencoded_data[key] == None:
                     skip = True
             if not skip:
-                self.upload_record(processed_unencoded_data,model_name)
-        
+                return_value = self.upload_record(processed_unencoded_data,model_name)
+                if return_value == None:
+                    failure_list.append(record_number)
+                else:
+                    print('INFO: Uploaded record',record_number)
         source.close()
+        
+        return failure_list
 
     # I'm not expecting people to filter on relationship fields because they can filter the related objects and then follow the relationships if needed. I don't see a need to exclude filters yet though
         
