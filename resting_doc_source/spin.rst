@@ -1,5 +1,5 @@
-Spin configuration
-==================
+Deployment on NERSC Spin
+========================
 
 .. docker image: registry url
 .. namespace: appear like folders within project
@@ -7,9 +7,9 @@ Spin configuration
 
 Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 
-.. |project_id| replace:: ``m3670``
-.. |namespace| replace:: ``catalog``
-.. |database_image| replace:: ``registry.nersc.gov/`` |project_id| ``/acts_postgres:12``
+.. |project_id| replace:: ``<project_id>``
+.. |namespace| replace:: ``<namespace>``
+.. |database_image| replace:: ``registry.nersc.gov/`` |project_id| ``/<app_name>_postgres:12``
 .. |database_password_name| replace:: ``db-password``
 .. |database_password| replace:: <choose-any-valid-passwordfill-in-database-password>
 .. |secrets_directory| replace:: ``/secrets``
@@ -31,7 +31,7 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 .. |certificate_name| replace:: ``certificate``
 .. Default			
 .. |postgres_user| replace:: ``postgres``
-.. |cname| replace:: ``covidscreen.lbl.gov``
+.. |cname| replace:: ``<server_name>``
 .. |key_file| replace:: |cname| ``.key``
 .. |certificate_file| replace:: ``covidscreen_lbl_gov.cer``
 .. |reordered_certificate_file| replace:: ``reordered_covidscreen_lbl_gov.cer``
@@ -44,20 +44,20 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 ..      * POSTGRES_DB = |postgres_user|
 ..   #. Expand the "Command" panel, confirm that "Interactive & TTY" is selected in the "Console" section
 
-#. Set ``platform = 'spin'`` in the project description file and build the Docker images locally.
+.. #. Set ``platform = 'spin'`` in the project description file and build the Docker images locally.
    
-#. Push those images to ``registry.nersc.gov``
-
-   #. Open a session by running ``docker login registry.nersc.gov``
-   #. Give images suitable names by running commands of the form ``docker tag <image> registry.nersc.gov/`` |project_id| ``/<image>:<version>``
-   #. Or if the images will be run only using Spin, one can use the shortcut ``docker build -t registry.nersc.gov/`` |project_id| ``/<image>:<version>``
-   #. Push the PostgreSQL image by running ``docker push`` |database_image|
-   #. Push the web server image by running ``docker push`` |webserver_image_tag|
-   #. Note that images can be managed by visiting ``registry.nersc.gov`` from a web browser
+..
+   #. Push those images to ``registry.nersc.gov``
+      #. Open a session by running ``docker login registry.nersc.gov``
+      #. Give images suitable names by running commands of the form ``docker tag <image> registry.nersc.gov/`` |project_id| ``/<image>:<version>``
+      #. Or if the images will be run only using Spin, one can use the shortcut ``docker build -t registry.nersc.gov/`` |project_id| ``/<image>:<version>``
+      #. Push the PostgreSQL image by running ``docker push`` |database_image|
+      #. Push the web server image by running ``docker push`` |webserver_image_tag|
+      #. Note that images can be managed by visiting ``registry.nersc.gov`` from a web browser
       
-#. Log in with Shibboleth at https://rancher2.spin.nersc.gov/
+#. Log into Rancher 2 with Shibboleth at https://rancher2.spin.nersc.gov/
 
-#. Select "|project_id|" (for the ACTS project) from the "development" drop-down menu
+#. Select the appropriate project ID from the "development" or "production" drop-down menu
 
 #. Create a namespace
 
@@ -79,7 +79,7 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 
    #. Click "Save"   
       
-#. Create the database workload (this procedure is described in ``db.yaml``)
+#. Create the database workload
 
    #. Select "Workloads" from the "Resources" drop-down menu, click "Deploy" and set
 
@@ -209,10 +209,10 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 
       #. Expand the "Command" panel
 
-      #. For me (khiga), working on ACTS (|project_id|), set
+      #. Set the appropriate values (determined by NERSC project) for
 
-	 * User ID: 63001
-	 * Filesystem Group: 93148
+	 * User ID
+	 * Filesystem Group
       
       #. Expand the "Security & Host Config" panel
 
@@ -336,9 +336,3 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
       #. `python manage.py createsuperuser` and follow the prompts to create the account.
 
    #. One can then log into the Django admin site `https://<server_name>/admin/` using this superuser account and create regular user accounts using the web interface.
-
-   #. Upon restarting the PostgreSQL workload, it may be necessary to execute a shell and execute `/custom_entry_point.sh`.
-
-#. If one changes the project description file, such as by adding a new Django model, new database tables must be constructed. Ideally, these changes would be managed by the Django migration system. Unfortunately, we have found in practice that the system does not automatically detect the addition of a new model. If all else fails, it might be necessary to drop and initialize the database and to run `python manage.py migrate` once again, then upload the data once again, after creating the superuser account as before.
-
-#. One should also set DEBUG = False in production in the `settings.py` file

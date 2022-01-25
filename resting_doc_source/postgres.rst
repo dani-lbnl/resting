@@ -1,5 +1,5 @@
-PostgreSQL Docker image
-=======================
+Additional information about the PostgreSQL Docker image
+========================================================
 
 PostgreSQL (Postgres) appears to be the recommended production-level database for use with Django.
 
@@ -23,3 +23,6 @@ Once this is done, one must perform the steps in the initial startup procedure s
 
 Access to the database server is described in the Django configuration section of this documentation.
 
+If one changes the project description file, such as by adding a new Django model, new database tables must be constructed. Ideally, these changes would be managed by the Django migration system. Unfortunately, we have found in practice that the system does not automatically detect the addition of a new model. If all else fails, it might be necessary to drop and initialize the database and to run `python manage.py migrate` once again, then upload the data once again, after creating the superuser account as before.
+
+Upon restarting the PostgreSQL workload, it may be necessary to execute a shell and execute `/custom_entry_point.sh`.

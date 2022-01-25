@@ -1,5 +1,5 @@
-Web server Docker image
-=======================
+Additional information about the web server Docker image
+========================================================
 
 The ``webserver`` directory of our Bitbucket repository serves as the Docker "context" for the image containing the web server and website, except for the database component. It contains ``Dockerfile``, which describes the building of the image.
 

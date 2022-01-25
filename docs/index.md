@@ -5,15 +5,19 @@
 * Code for the "REST Interface Generator (RESTInG)" project
 * "webserver" directory: context for Docker image containing
     * "apache" directory: Apache 2 configuration files
+    * "ssl" directory:
     * "website" directory: Django website source code
 * "postgres" directory: context for Docker image containing PostgreSQL configuration    
-* "utils" directory: Python 3 module for simplifying client access to web server using Django REST framework
+* "resting" directory: Python 3 module for simplifying client access to web server using Django REST framework
 * "doc" directory: Sphinx documentation for the code in this repository
 
 ### How do I get set up? ###
 
 * Summary of set up
-* Configuration
+    * Clone the RESTInG repository with a command such as "git clone https://github.com/dani-lbnl/resting.git".
+    * It is likely that Python 3 is already available on the "development system," the computer on which RESTInG will run. On the Debian 10 computer on which RESTInG was developed, Python 3 can be installed by running "apt-get install python3", if needed.
+    * Sphinx must be available to build the documentation. On the Debian 10 computer on which RESTInG was developed, Sphinx can be installed by running "apt-get install python3-sphinx".
+    * Build the documentation: from the "resting" subdirectory, run sphinx.sh using "./sphinx.sh" or a command such as "sh sphinx.sh". The script will provide the name of a local file (and a corresponding URL) for the documentation index. It can be viewed with a web browser. Click on the "Setup" link for continued setup instructions.
 * Dependencies
     * Docker
         * Official Python 3 image
@@ -24,17 +28,10 @@
     * Python 3
     * Sphinx (Python 3 version)
     
-* Database configuration
-    * PostgreSQL is used as the database backend for the web server; setup is described in the documentation.
-    
-* How to run tests
-    * The "resting/project.py" file included in the repository can be used to generate a service that runs locally and which can be used as a basis for automated testing. Most users will not need to run these tests; they are aimed at assisting RESTInG developers. The "resting/test.sh" script builds the Docker images for local use. 
-
 * Deployment instructions
-    * The Docker images produced by this tool are intended for use on the NERSC Spin platform, as described in the documentation.
+    * The Docker images produced by this tool can run on the NERSC Spin platform or on a standalone server. The documentation provides instructions for both hosting options.
     
 ### Contribution guidelines ###
-    * Change to the resting directory and run start.sh. HTML documentation will be built in the doc/_build/html/ directory.
 * Writing tests
 * Code review
 * Other guidelines

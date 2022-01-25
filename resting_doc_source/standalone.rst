@@ -1,31 +1,9 @@
-Configuration on standalone servers
-===================================
+Deployment on a standalone server
+=================================
 
-To create a service that will run on a standalone service, rather than on a cloud-like platform such as NERSC Spin, one may use the following procedure. It is assumed that the server has a working Docker installation, as on the computer on which the Docker images were generated for the Spin system.
+To create a service that will run on a standalone service, rather than on a cloud-like platform such as NERSC Spin, one may use the following procedure. We assume that the server has a working Docker installation, as on the computer on which the Docker images were generated for the Spin system. We also assume that the server is on a network on which it is visible to all intended clients.
 
-#. Clone the RESTInG repository.
-
-#. Create a project description file `project.py` in the `resting` subdirectory, setting:
-
-   #. `platform = 'standalone'`
-      
-   #. optionally, `secrets_directory` and `pgdata_directory` to directories on the host filesystem that are to contain the database password file and to store the data within the database, respectively; by default, these are the `secrets` and `pgdata` subdirectories within the repository
-      
-   #. `ssl_certificate_file` and `ssl_certificate_key_file` to the locations of the SSL certificate and private key, within the Docker image; note that the contents of `webserver/ssl` directory of the repository are automatically and recursively copied onto the `/etc/ssl` directory in the Docker image.
-
-#. Create a file named `password` within the `secrets_directory` specified above. This file should contain some plaintext password. Users will never have to reference this password directly. Both containers will automatically mount the directory to obtain access to the password.
-
-#. Change to the `resting` directory within the repository.
-   
-#. Run `start.sh` to generate the basic service description files.
-
-#. Perform any desired modifications to the service description files.
-
-   #. In particular, for a production server, one should uncomment `DEBUG = False` at the end of `webserver/website/website/sed_script_settings.py`
-
-#. Run `finish.sh` to generate the Docker images.
-
-#. Run `run.sh` to start the Docker containers on the present computer.
+#. From the `resting` subdirectory, run `run.sh` to start the Docker containers on the present computer.
 
 #. Run `docker exec -it ws /bin/bash` to execute a shell in the container
 
