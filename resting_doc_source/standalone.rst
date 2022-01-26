@@ -1,34 +1,32 @@
 Deployment on a standalone server
 =================================
 
-To create a service that will run on a standalone service, rather than on a cloud-like platform such as NERSC Spin, one may use the following procedure. We assume that the server has a working Docker installation, as on the computer on which the Docker images were generated for the Spin system. We also assume that the server is on a network on which it is visible to all intended clients.
+We assume that all steps in the Setup chapter have been performed for running on a standalone server. We assume that the server has a working Docker installation, as on the computer on which the Docker images were generated for the Spin system, and that the server is on a network on which it is visible to all intended clients.
 
-#. From the `resting` subdirectory, run `run.sh` to start the Docker containers on the present computer.
+#. From the ``resting`` subdirectory of the repository, run ``run.sh`` to start the Docker containers on the present computer.
 
-#. Run `docker exec -it ws /bin/bash` to execute a shell in the container
+#. Run ``docker exec -it ws /bin/bash`` to execute a shell in the container
 
-#. In `/srv/website`, run:
+#. In ``/srv/website``, run:
 
-   #. `python manage.py makemigrations`
+   #. ``python manage.py makemigrations``
 
-   #. `python manage.py migrate`      
+   #. ``python manage.py migrate``      
 
-   #. `python manage.py createsuperuser` and follow the prompts to create the account; this is specific to a Django website. One can the log into the Django admin site `https://<server_name>/admin/` using this superuser account and create regular user accounts using the web interface.
+   #. ``python manage.py createsuperuser`` and follow the prompts to create the account; this is specific to a Django website. One can the log into the Django admin site ``https://<server_name>/admin/`` using this superuser account and create regular user accounts using the web interface.
 
-#. Network-specific and system-specific configuration might be needed in order to make the web service available to other computers. For example, on a Linux host without a firewall, one can make the services accessible to any other computer (assuming that incoming traffic is being properly routed to your computer) by editing `/etc/hosts.allow` and appending::
-
-   80, 443: ALL
+#. Network-specific and system-specific configuration might be needed in order to make the web service available to other computers. For example, on a Linux host without a firewall, one can make the services accessible to any other computer (assuming that incoming traffic is being properly routed to your computer) by editing ``/etc/hosts.allow`` and appending ``80, 443: ALL``
       
-#. Run `resting/stop.sh` to stop the Docker containers, or `resting/stop_db.sh` and `resting/stop_ws.sh` to stop the database and web server containers separately.
+#. Run ``resting/stop.sh`` to stop the Docker containers, or ``resting/stop_db.sh`` and ``resting/stop_ws.sh`` to stop the database and web server containers separately.
 
-#. Run `resting/rerun.sh` to stop and rerun the Docker containers, or `resting/rerun_db.sh` and `resting/rerun_we.sh` to stop and rerun the database and web server containers separately. This is useful in using newly generated Docker images to replace older containers.
+#. Run ``resting/rerun.sh`` to stop and rerun the Docker containers, or ``resting/rerun_db.sh`` and ``resting/rerun_we.sh`` to stop and rerun the database and web server containers separately. This is useful in using newly generated Docker images to replace older containers.
 
-#. Run `resting/rm.sh` to remove the Docker containers, or `resting/rm_db.sh` and `resting/rm_ws.sh` to remove the database and web server containers separately.
+#. Run ``resting/rm.sh`` to remove the Docker containers, or ``resting/rm_db.sh`` and ``resting/rm_ws.sh`` to remove the database and web server containers separately.
       
 ..
- Upon restarting the PostgreSQL workload, it may be necessary to execute a shell and execute `/custom_entry_point.sh`.
+ Upon restarting the PostgreSQL workload, it may be necessary to execute a shell and execute ``/custom_entry_point.sh``.
 
- If one changes the project description file, such as by adding a new Django model, new database tables must be constructed. Ideally, these changes would be managed by the Django migration system. Unfortunately, we have found in practice that the system does not automatically detect the addition of a new model. If all else fails, it might be necessary to drop and initialize the database and to run `python manage.py migrate` once again, then upload the data once again, after creating the superuser account as before.
+ If one changes the project description file, such as by adding a new Django model, new database tables must be constructed. Ideally, these changes would be managed by the Django migration system. Unfortunately, we have found in practice that the system does not automatically detect the addition of a new model. If all else fails, it might be necessary to drop and initialize the database and to run ``python manage.py migrate`` once again, then upload the data once again, after creating the superuser account as before.
 
 ..
    # Now deploy the images

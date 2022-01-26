@@ -5,11 +5,11 @@ Deployment on NERSC Spin
 .. namespace: appear like folders within project
 .. path: different workloads associated with same hostname
 
-Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
+Adapting the procedure given in the ``SpinUp Workshop for New Users.pdf`` slides:
 
 .. |project_id| replace:: ``<project_id>``
 .. |namespace| replace:: ``<namespace>``
-.. |database_image| replace:: ``registry.nersc.gov/`` |project_id| ``/<app_name>_postgres:12``
+.. |database_image| replace:: ``registry.nersc.gov/<project_id>/<app_name>_postgres:12``
 .. |database_password_name| replace:: ``db-password``
 .. |database_password| replace:: <choose-any-valid-passwordfill-in-database-password>
 .. |secrets_directory| replace:: ``/secrets``
@@ -24,20 +24,15 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 .. |database_workload| replace:: ``db``
 .. |webserver_workload| replace:: ``webserver``
 .. |ingress_name| replace:: ``lb``				  
-.. |hostname| replace:: |ingress_name|. |namespace| ``.development.svc.spin.nersc.org``
-.. .. |hostname| replace:: |ingress_name|. |namespace| ``.production.svc.spin.nersc.org`
 
-.. |webserver_image_tag| replace:: ``registry.nersc.gov/`` |project_id| ``/webserver:version``
+.. |webserver_image_tag| replace:: ``registry.nersc.gov/<project_id>/webserver:version``
 .. |certificate_name| replace:: ``certificate``
 .. Default			
 .. |postgres_user| replace:: ``postgres``
 .. |cname| replace:: ``<server_name>``
-.. |key_file| replace:: |cname| ``.key``
-.. |certificate_file| replace:: ``covidscreen_lbl_gov.cer``
-.. |reordered_certificate_file| replace:: ``reordered_covidscreen_lbl_gov.cer``
-.. |cfs_path| replace:: ``/global/cfs/cdirs/`` |project_id| ``/CXR/``
-.. .. |source_thumbnail_path| replace:: ``/global/cfs/cdirs/`` |project_id| ``/www/CXR``
-.. |source_thumbnail_path| replace:: ``/global/cfs/projectdirs/`` |project_id| ``/CXR``
+.. |key_file| replace:: ``<server_name>.key``
+.. |reordered_certificate_file| replace:: ``reordered_certificate_file.cer``
+.. |cfs_path| replace:: ``/global/cfs/cdirs/<project_id>/<subpath>/``
 			           
 .. These are default values
 ..      * POSTGRES_USER = |postgres_user|     
@@ -61,9 +56,7 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 
 #. Create a namespace
 
-   #. Click "Namespace", click "Add Namespace", set
-
-      * Name: |namespace|
+   #. Click "Namespace", click "Add Namespace", then define "Name" to be a value of your choice, which will be represented below as |namespace|.
 
    #. Click "Create"
 
@@ -105,7 +98,7 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 
 	 * Key: |database_password_key|
 	 * Path: |database_password_path|
-	 * Mode: 444  
+	 * Mode: ``444``
 	
       #. Set "Mount Point" to |secrets_directory|
 
@@ -177,7 +170,7 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 	 
 	 * Key: |database_password_key|
 	 * Path: |database_password_path|
-	 * Mode: 444
+	 * Mode: ``444``
 
       #. Select
 	 
@@ -187,24 +180,15 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 
 	 * Mount: |secrets_directory|
 
-      #. Click on "Add Volume", click "Bind-mount a directory from the node"
-
-      #. Set
+      #. One might wish to make files on the common file system available to the webserver container. To do this, begin by clicking on "Add Volume", click "Bind-mount a directory from the node."
+	 
+      #. Then, as an example for static files, one might perform the following steps, setting
 
 	 * Path on the Node: |cfs_path|
 	 * The Path on the Node must be: ``An existing directory``
-	 * Mount Point: /srv/static/nersc
+	 * Mount Point: ``/srv/static/nersc``
 	 * Read-Only: Checked  
 
-      #. Click on "Add Volume", click "Bind-mount a directory from the node"
-
-      #. Set
-
-	 * Path on the Node: |source_thumbnail_path|
-	 * The Path on the Node must be: ``An existing directory``
-	 * Mount Point: /srv/thumbnails
-	 * Read-Only: Checked  
-	 
    #. Click on "Show advanced options" at the bottom of the page
 
       #. Expand the "Command" panel
@@ -226,32 +210,30 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 
    #. Click "Launch" and wait for all pod indicators to turn green.
 
-   #. One should now perform the Django initialization. Open the "Resources" drop-down menu, select "Workloads", then click the "three-dot" menu next to the |webserver_workload| workload, execute a shell, move to the `/srv/website` directory, and execute
+   #. One should now perform the Django initialization. Open the "Resources" drop-down menu, select "Workloads", then click the "three-dot" menu next to the |webserver_workload| workload, execute a shell, move to the ``/srv/website`` directory, and execute
 
-      #. `python manage.py makemigrations`
-      #. `python manage.py migrate`
-      #. `python manage.py createsuperuser`
+      #. ``python manage.py makemigrations``
+      #. ``python manage.py migrate``
+      #. ``python manage.py createsuperuser``
       
-#. Request creation of a CNAME
+#. Request creation of CNAME records for `<development_server_name>` and `<server_name>`; users with LBNL affiliation can use the following procedure:
 
-   #. Go to https://iprequest.lbl.gov/ and request CNAME |cname| as an alias for FQDN |hostname| (ignore any spaces appearing here)
+   #. Go to https://iprequest.lbl.gov/ and request CNAME records as aliases for ``lb.<namespace>.development.svc.spin.nersc.org`` and ``lb.<namespace>.production.svc.spin.nersc.org`` 
       
 #. Generate an SSL/TLS certificate request
 
    #. Run ``generate.sh`` in the ``certificate`` directory, entering relevant identifying information
-   #. Or on a system with openssl run a command of the form::
-      
-      openssl req -new -newkey rsa:2048 -nodes -addext "subjectAltName = DNS:covidsceen-dev.lbl.gov" -keyout covidscreen.lbl.gov.key -out covidscreen.lbl.gov.csr
+   #. Or on a system with openssl run a command of the form: ``openssl req -new -newkey rsa:2048 -nodes -addext "subjectAltName = DNS:<development_server_name>" -keyout <server_name>.key -out <server_name>.csr`` (we thank Cory Snavely of NERSC for the SubjectAltName suggestion)
 
-#. Request an SSL/TLS certificate
+#. Request an SSL/TLS certificate; users with LBNL affiliation can use the following procedure:
 
    #. Go to https://certificates.lbl.gov/
 
-   #. Paste the contents of the ``covidscreen.lbl.gov.csr`` file into the text box and submit
+   #. Paste the contents of the ``<server_name>.csr`` file into the text box and submit
 
    #. Once approved, download the "Certificate (w/ chain), PEM encoded" from the link received by e-mail
 
-   #. Reorder the contents of the certificate file, removing the first certificate and inverting the order of all others
+   #. Reorder the contents of the certificate file, removing the first certificate and inverting the order of all others, and save as |reordered_certificate_file|
       
 #. Add an SSL/TLS certificate
       
@@ -278,23 +260,23 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 
    #. Select "Specify a hostname to use", set
 
-      * Request Host: |hostname| (ignore any spaces appearing here)
+      * Request Host: ``lb.<namespace>.production.svc.spin.nersc.org`` (for production) or ``lb.<namespace>.development.svc.spin.nersc.org`` (for development)
 	
    #. Set
 
       * Target: |webserver_workload|
-      * Port: 8000
+      * Port: ``8000``
 
    #. Click "Add Rule"
 
-   #. Select "Specify a hostname to use", set
+   #. Select "Specify a hostname to use", set 
 
-      * Request Host: |cname|
+      * Request Host: ``<server_name>`` (for production) or ``<development_server_name>`` (for development)
 	
    #. Set
 
       * Target: |webserver_workload|
-      * Port: 8000
+      * Port: ``8000``
       
    #. Expand the "SSL/TLS Certificates" panel, click "Add Certificate", select
       
@@ -327,12 +309,12 @@ Adapting the procedure given in the `SpinUp Workshop for New Users.pdf` slides:
 
    #. Select "Execute Shell."
 
-   #. In the `/srv/website`, run
+   #. In the ``/srv/website``, run
 
-      #. `python manage.py makemigrations`
+      #. ``python manage.py makemigrations``
    
-      #. `python manage.py migrate`      
+      #. ``python manage.py migrate``      
 
-      #. `python manage.py createsuperuser` and follow the prompts to create the account.
+      #. ``python manage.py createsuperuser`` and follow the prompts to create the account.
 
-   #. One can then log into the Django admin site `https://<server_name>/admin/` using this superuser account and create regular user accounts using the web interface.
+   #. One can then log into the Django admin site ``https://<server_name>/admin/`` using this superuser account and create regular user accounts using the web interface.

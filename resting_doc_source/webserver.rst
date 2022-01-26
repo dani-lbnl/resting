@@ -27,13 +27,13 @@ Apache is listening to port 8000 "inside" of the container, but that "container"
 
 The Dockerfile then directs the creation of a Django website, copies custom code describing the website into the image, and then connects the website to the database. Since the website and database are running in separate containers, the setup is different from a situation in which both are running "natively" on the same system.
 
-The ``settings.py`` file in the Django installation must be modified to use PostgreSQL rather than the default SQLite, and it must be directed to access the database server in another container.
+The ``project.py`` file in the Django installation must be modified to use PostgreSQL rather than the default SQLite, and it must be directed to access the database server in another container.
 
 .. |secrets_directory| replace:: ``/secrets``
 .. |database_password_key| replace:: ``password`` 
 .. |database_password_path| replace:: ``password``
 
-As described in the Spin configuration, the secret, which is attached to both the Postgres container filesystem and the web server container filesystem in the same locations, is simply a text file located at |secrets_directory|/ |database_password_path|/ |database_password_key|. The custom ``settings.py`` file directs Python to read this file to obtain the database password.
+As described in the Spin configuration, the secret, which is attached to both the Postgres container filesystem and the web server container filesystem in the same locations, is simply a text file located at |secrets_directory|/ |database_password_path|/ |database_password_key|. The custom ``project.py`` file directs Python to read this file to obtain the database password.
 
 Finally, as Cory noted, when a container is run and starts its entry point command, the process should continue in the foreground in order to prevent Spin from exiting. This is specifed to Docker as::
 
@@ -45,7 +45,7 @@ To start a container and have the web server within accessible on port 80 of the
 
   docker run -p 80:8000 <image name>
 
-The ``build.sh`` script builds the Docker image as
+.. The ``build.sh`` script builds the Docker image as
   
 .. Apache starts at root, switches to apache user
 .. run with minimum capabilities in case someone hacks service

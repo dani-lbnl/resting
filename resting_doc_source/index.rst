@@ -7,4 +7,5 @@ REST Interface Generator (RESTInG) Documentation
    standalone
    client
    postgres   
-   webserver
+   acknowledgments
+   disclaimer
