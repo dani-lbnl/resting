@@ -1,8 +1,8 @@
 import os
 
 split_cwd = os.path.split(os.getcwd())
-# We should be running this from the resting directory within the repository
-assert split_cwd[1] == 'resting'
+# We should be running this from the resting directory within the repository, although this is a problem for documentation generation
+#assert split_cwd[1] == 'resting'
 repository_top_directory = split_cwd[0]
 
 app_name = 'test'

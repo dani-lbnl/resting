@@ -3,6 +3,9 @@ Python client module
 
 Although web interfaces generated as described above are immediately usable, the ``resting/rest_client.py`` module contains code that simplifies programmatic access. With this module, users can easily establish authenticated connections to the database, and retrieve, store, and update information in the database. The necessary HTTP requests and the interpretation of responses are performed transparently by the module.
 
+Uploading CSV files
+-------------------
+
 This module also allows bulk upload of records from comma-separated value (CSV) files. Plugins for reading additional file formats can be supplied by the user.
 
 Each CSV file is assumed to contain records corresponding to a single type of model. We will first describe the upload of CSV files describing independent models or dependent modules that do not have required relationships to other models. Once these are stored, one can then load records from files corresponding to independent models that have required relationships to existing records, or update records in dependent modules with optional relationships.
@@ -21,5 +24,9 @@ Users will often need to write small programs to make data files consistent with
 
 .. With these modifications and the specification of model descriptions, users can choose to store records drawn from multiple files that contain anything from a common subset of the attributes contained all files to a superset of attributes found in all files. 
 
-For dependent models, it is likely to be convenient to provide information establishing these relationships in the data files along with other model attribute data. For these relationship attributes, the CSV files can contain strings that represent queries; when the dependent model instances are created, these queries are performed, and the filter results are used as field values.
+For dependent models, it is likely to be convenient to provide information establishing these relationships in the data files along with other model attribute data. For these relationship attributes, the CSV files can contain strings that represent queries; when the dependent model instances are created, these queries are performed, and the filter results are used as field values. For a ``OneToOneField`` or a ``ForeignKey``, corresponding queries must return a single record of the related model. For a ``ManyToManyField``, corresponding queries can return multiple records of the related model. The query strings ``<query_string>`` must be written so that ``https://<server_name>/<api_root>/<related_model_name>/?<query_string>`` is a valid URL for Django REST Framework Filters. For instance, a query string ``'year=2022&color__in=red,green,blue'`` would return records that have both a ``year`` field that is an exact match to ``2022`` and a ``color`` field that is an exact match to ``red``, ``green``, or ``blue``.
 
+rest_client.py reference
+------------------------
+.. automodule:: rest_client
+   :members:

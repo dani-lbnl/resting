@@ -1,12 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 cd ..
 # Create skeleton Sphinx files for RESTInG documentation
 mkdir doc
 cd doc
-sphinx-quickstart -q -p 'REST Interface Generator (RESTInG)' -a 'Regents of the University of California' -v ''
+sphinx-quickstart -q --extensions=sphinx.ext.napoleon -p 'REST Interface Generator (RESTInG)' -a 'Regents of the University of California' -v ''
 # Link in the RESTInG documentation source files
 rm index.rst
 ln -s ../resting_doc_source/* .
+echo -e 'import os.path\nimport sys\nsys.path.append(os.path.abspath("..") + "/resting")' >> conf.py
 # Use Sphinx to generate site documentation
 make html
 cd _build/html
