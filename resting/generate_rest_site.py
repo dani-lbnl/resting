@@ -12,7 +12,8 @@ apache_directory = webserver_directory + 'apache/'
 website_documentation_directory = webserver_directory + 'doc/'
 website_directory = webserver_directory + 'website/'
 app_directory = website_directory + f'{project.app_name}/'
-os.mkdir(app_directory)
+if not os.access(app_directory,os.F_OK):
+    os.mkdir(app_directory)
 site_directory = website_directory + 'website/'
 template_directory = website_directory + 'templates/'
 
@@ -542,10 +543,10 @@ cd $TOP
 # If already authenticated, this doesn't do any harm:
 docker login registry.nersc.gov
 cd postgres
-${SUDOPREFIX}./build.sh
+${{SUDOPREFIX}}./build.sh
 docker push {tag_prefix}{project.app_name}_postgres:12
 cd ../webserver
-${SUDOPREFIX}./build.sh
+${{SUDOPREFIX}}./build.sh
 docker push {tag_prefix}{project.app_name}_webserver:3.7
 '''
     
@@ -576,9 +577,9 @@ cp -R * $TOP/webserver/website/$APP_NAME/static/$APP_NAME/doc
 cd $TOP
 # Assume that there's no need to push to a repository
 cd postgres
-${SUDOPREFIX}./build.sh
+${{SUDOPREFIX}}./build.sh
 cd ../webserver
-${SUDOPREFIX}./build.sh
+${{SUDOPREFIX}}./build.sh
 '''
     # https://docs.docker.com/network/bridge/
     run_template = f'''
@@ -602,13 +603,13 @@ fi
 # Create user-defined bridge network if one doesn't already exist
 if [[ `docker network ls -f name={project.app_name}_network | wc -l` -eq 1 ]]
 then
-    ${SUDOPREFIX}docker network create {project.app_name}_network
+    ${{SUDOPREFIX}}docker network create {project.app_name}_network
 fi
 # The custom entry point script expects this image to be run with the -it flags
 ./run_db.sh
 ./run_ws.sh
 # Execute shell, allowing user to perform final configuration
-${SUDOPREFIX}docker exec -it ws /bin/bash /initialize.sh
+${{SUDOPREFIX}}docker exec -it ws /bin/bash /initialize.sh
 '''
 
     generate(run_template,script_directory + 'run.sh')
