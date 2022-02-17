@@ -12,7 +12,7 @@ class TestClient(unittest.TestCase):
                 print(chr(65+i) + ',' + str(i) + ',' + str(i) + ',https://localhost/,' + chr(65+i),file=csvfile)
 
         # need to get username, password information in
-        connection = rest_client.RecordConnection(project.server,username,password)
+        connection = rest_client.RecordConnection(project.server_name,username,password)
         connection.upload('test_independent.csv','Independent')
                     
         with open('test_dependent.csv','w') as csvfile:

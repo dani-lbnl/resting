@@ -481,7 +481,7 @@ RUN cp /srv/website/templates/* /usr/lib/python3/dist-packages/rest_framework/te
 CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
 '''
 else:
-    # I frequently run into a problem with psycopg2; import psycopg2 attempts to import from psycopg2._psycopg, a module that does not exist, but is supposed to be part of the same package. This was why I switched from python:3.8 to python:3.7 when working on a Linux system, but it seems that this does not work on a Windows system, which might require yet another version.
+    # I frequently run into a problem with psycopg2; import psycopg2 attempts to import from psycopg2._psycopg, a module that does not exist, but is supposed to be part of the same package. This was why I switched from python:3.8 to python:3.7 when working on a Linux system, but it seems that this does not work on a Windows or Mac system, which might require yet another version.
     website_dockerfile_template = f'''
 # There are version problems with mod_wsgi and psycopg2 in the latest (3.8) image, so stay with 3.7
 FROM python:3.7
@@ -638,13 +638,13 @@ ${{SUDOPREFIX}}docker exec -it ws /bin/bash /initialize.sh
     os.chmod(script_directory + 'run.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
 
     run_db_template = f'''
-docker run -itd --network={project.app_name}_network -h db --mount type=bind,src={project.secrets_directory},dst=/secrets --mount type=bind,src={project.pgdata_directory},dst=/var/lib/postgres -e POSTGRES_PASSWORD_FILE=/secrets/password -e PGDATA=/var/lib/postgres/data --name db acts_postgres:12
+docker run -itd --network={project.app_name}_network -h db --mount type=bind,src={project.secrets_directory},dst=/secrets --mount type=bind,src={project.pgdata_directory},dst=/var/lib/postgres -e POSTGRES_PASSWORD_FILE=/secrets/password -e PGDATA=/var/lib/postgres/data --name db {project.app_name}_postgres:12
 '''
     generate(run_db_template,script_directory + 'run_db.sh')
     os.chmod(script_directory + 'run_db.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
 
     run_ws_template = f'''
-sudo docker run -d --network={project.app_name}_network -h ws --mount type=bind,src={project.secrets_directory},dst=/secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 80:80/tcp -p 443:443/tcp --name ws acts_webserver:3.7
+sudo docker run -d --network={project.app_name}_network -h ws --mount type=bind,src={project.secrets_directory},dst=/secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 80:80/tcp -p 443:443/tcp --name ws {project.app_name}_webserver:3.7
 '''
     generate(run_ws_template,script_directory + 'run_ws.sh')
     os.chmod(script_directory + 'run_ws.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
