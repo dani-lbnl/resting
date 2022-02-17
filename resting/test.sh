@@ -16,4 +16,5 @@ cd $CWD
 ./finish.sh
 cd $CWD
 ./run.sh
-$PYTHON tests.py
+echo Now manually initialize the Django installation and run "$PYTHON tests.py"
+# Ran into a problem here with rest_framework_filters.backends lacking a DjangoFilterBackend member, but this does gives me two running containers

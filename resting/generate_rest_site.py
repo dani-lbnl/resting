@@ -649,7 +649,7 @@ docker run -itd --network={project.app_name}_network -h db --mount type=bind,src
     os.chmod(script_directory + 'run_db.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
 
     run_ws_template = f'''
-sudo docker run -d --network={project.app_name}_network -h ws --mount type=bind,src='{project.secrets_directory}',dst=/secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 80:80/tcp -p 443:443/tcp --name ws {project.app_name}_webserver:3.7
+docker run -d --network={project.app_name}_network -h ws --mount type=bind,src='{project.secrets_directory}',dst=/secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 80:80/tcp -p 443:443/tcp --name ws {project.app_name}_webserver:3.7
 '''
     generate(run_ws_template,script_directory + 'run_ws.sh')
     os.chmod(script_directory + 'run_ws.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
