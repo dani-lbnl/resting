@@ -537,7 +537,7 @@ fi
 APP_NAME={project.app_name}
 cd ..
 TOP=`pwd`
-if [[ ${{MACHTYPE%cygwin}}=$MACHTYPE ]]
+if [[ ${{MACHTYPE%cygwin}} = $MACHTYPE ]]
 then
     SUDOPREFIX='sudo '
 else
@@ -581,7 +581,7 @@ fi
 APP_NAME={project.app_name}
 cd ..
 TOP=`pwd`
-if [[ ${{MACHTYPE%cygwin}}=$MACHTYPE ]]
+if [[ ${{MACHTYPE%cygwin}} = $MACHTYPE ]]
 then
     SUDOPREFIX='sudo '
 else
@@ -606,7 +606,7 @@ ${{SUDOPREFIX}}./build.sh
     # https://docs.docker.com/network/bridge/
     run_template = f'''
 #!/bin/bash
-if [[ ${{MACHTYPE%cygwin}}=$MACHTYPE ]]
+if [[ ${{MACHTYPE%cygwin}} = $MACHTYPE ]]
 then
     SUDOPREFIX='sudo '
 else

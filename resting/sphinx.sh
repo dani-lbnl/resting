@@ -23,5 +23,7 @@ echo -e '\nimport os.path\nimport sys\nsys.path.append(os.path.abspath("..") + "
 # Use Sphinx to generate site documentation
 make SPHINXBUILD="$PYTHON -m sphinx.cmd.build" html
 cd _build/html
-echo To view RESTInG\'s documentation, including setup instructions, open a web browser and open the following file: `pwd`/index.html
+echo To view RESTInG\'s documentation on a Linux or Mac, including setup instructions, open a web browser and open the following file: `pwd`/index.html
 echo or try this URL: file://`pwd`/index.html
+USERNAME=`whoami`
+echo These will not work when using Cygwin on a Windows computer. Instead, direct a web browser to a file such as "C:\cygwin64\home\$USERNAME\resting\doc\_build\html\index.html", or a corresponding URL such as "file:///C:/cygwin64/home/$USERNAME/resting/doc/_build/html/index.html"
