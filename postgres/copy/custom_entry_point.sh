@@ -8,7 +8,8 @@
 if [ ! -d $PGDATA ]
 then
     # Databases cannot be created as root, all data and process ownership will be under the user "postgres" (already exists in the image)
-    # Ownership of $PGDATA by the user under which Postgres runs is required
+    # Ownership of $PGDATA by the user under which Postgres runs is required in order to initiate the database
+    mkdir -p --mode=777 $PGDATA
     chown -R postgres $PGDATA
     # This creates a database named "postgres" (default) with a database superuser named "postgres" (default); this should also respect the information in environment variables, such as the password file
     runuser -c "initdb --pwfile=$POSTGRES_PASSWORD_FILE" postgres
