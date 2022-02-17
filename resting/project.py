@@ -1,4 +1,6 @@
 import os
+import sys
+import subprocess
 
 split_cwd = os.path.split(os.getcwd())
 # We should be running this from the resting directory within the repository, although this is a problem for documentation generation
@@ -19,8 +21,16 @@ server_name = 'localhost'
 platform = 'standalone'
 
 # These are the file locations in the host filesystem, as needed on a standalone server
-secrets_directory = repository_top_directory + '/secrets'
-pgdata_directory = repository_top_directory + '/pgdata'
+# Under Cygwin on a Windows computer, these must be translated to be recognized by Docker, which is installed separately
+# http://stackoverflow.com/questions/8220108/ddg#8220141
+if sys.platform == 'cygwin':
+    completed_process = subprocess.run(['cygpath','-w',repository_top_directory + '/secrets'],capture_output=True)
+    secrets_directory = completed_process.stdout.decode()
+    completed_process = subprocess.run(['cygpath','-w',repository_top_directory + '/pgdata'],capture_output=True)    
+    pgdata_directory = completed_process.stdout.decode()
+else:
+    secrets_directory = repository_top_directory + '/secrets'
+    pgdata_directory = repository_top_directory + '/pgdata'
 
 # The webserver/ssl directory within the repository and its contents are automatically copied recursively onto /etc/ssl within the webserver Docker image, these are required on a standalone server
 # Specify the file locations within the Docker image

@@ -631,8 +631,8 @@ then
     ${{SUDOPREFIX}}docker network create {project.app_name}_network
 fi
 # The custom entry point script expects this image to be run with the -it flags
-./run_db.sh
-./run_ws.sh
+${{SUDOPREFIX}}./run_db.sh
+${{SUDOPREFIX}}./run_ws.sh
 # Execute shell, allowing user to perform final configuration
 ${{SUDOPREFIX}}docker exec -it ws /bin/bash /initialize.sh
 '''
