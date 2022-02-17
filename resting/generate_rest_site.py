@@ -481,12 +481,15 @@ RUN cp /srv/website/templates/* /usr/lib/python3/dist-packages/rest_framework/te
 CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
 '''
 else:
-    # I frequently run into a problem with psycopg2; import psycopg2 attempts to import from psycopg2._psycopg, a module that does not exist, but is supposed to be part of the same package. This was why I switched from python:3.8 to python:3.7 when working on a Linux system, but it seems that this does not work on a Windows or Mac system, which might require yet another version.
+    # I encountered a problem with psycopg2 on Windows and Mac installations; import psycopg2 attempts to import from psycopg2._psycopg, a module that does not exist, but is supposed to be part of the same package. 
+    # It appears that there is something wrong with the Debian package python3-psycopg2. Removing it and installing through pip3 appears to work.
     website_dockerfile_template = f'''
 # There are version problems with mod_wsgi and psycopg2 in the latest (3.8) image, so stay with 3.7
 FROM python:3.7
 
 RUN apt-get update && apt-get -y install python3-djangorestframework apache2 libapache2-mod-wsgi-py3 python3-djangorestframework-filters
+
+RUN apt-get -y purge python3-psycopg2 && pip3 install psycopg2
 
 ENV PYTHONPATH /usr/lib/python3/dist-packages
 
