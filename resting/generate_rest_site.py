@@ -489,7 +489,10 @@ FROM python:3.7
 
 RUN apt-get update && apt-get -y install python3-djangorestframework apache2 libapache2-mod-wsgi-py3 python3-djangorestframework-filters
 
-RUN apt-get -y purge python3-psycopg2 && pip3 install psycopg2
+# Django 2.2 and psycopg 2.9 don't play well together
+# https://github.com/psycopg/psycopg2/issues/1293
+# https://stackoverflow.com/questions/68024060/assertionerror-database-connection-isnt-set-to-utc
+RUN apt-get -y purge python3-psycopg2 && pip3 install psycopg2==2.8.6
 
 ENV PYTHONPATH /usr/lib/python3/dist-packages
 
