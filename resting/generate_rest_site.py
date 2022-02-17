@@ -521,7 +521,7 @@ if project.platform == 'spin':
     tag_prefix = f'registry.nersc.gov/{project.NERSC_project_id}/'
     
     finish_template = f'''
-#!/bin/sh
+#!/bin/bash
 # Check for Python executable name
 if python3 -V
 then
@@ -565,7 +565,7 @@ else:
     tag_prefix = ''
     
     finish_template = f'''
-#!/bin/sh
+#!/bin/bash
 # Check for Python executable name
 if python3 -V
 then
@@ -605,7 +605,7 @@ ${{SUDOPREFIX}}./build.sh
 '''
     # https://docs.docker.com/network/bridge/
     run_template = f'''
-#!/bin/sh
+#!/bin/bash
 if [[ ${{MACHTYPE%cygwin}}=$MACHTYPE ]]
 then
     SUDOPREFIX='sudo '
@@ -650,12 +650,12 @@ sudo docker run -d --network={project.app_name}_network -h ws --mount type=bind,
     os.chmod(script_directory + 'run_ws.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
 
 postgres_build_template = f'''
-#!/bin/sh
+#!/bin/bash
 docker build -t {tag_prefix}{project.app_name}_postgres:12 .
 '''
 
 website_build_template = f'''
-#!/bin/sh
+#!/bin/bash
 docker build -t {tag_prefix}{project.app_name}_webserver:3.7 .
 '''
         

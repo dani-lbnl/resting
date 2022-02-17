@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Check for Python executable name
 if python3 -V
 then
