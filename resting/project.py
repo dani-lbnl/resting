@@ -25,9 +25,9 @@ platform = 'standalone'
 # http://stackoverflow.com/questions/8220108/ddg#8220141
 if sys.platform == 'cygwin':
     completed_process = subprocess.run(['cygpath','-w',repository_top_directory + '/secrets'],capture_output=True)
-    secrets_directory = completed_process.stdout.decode()
+    secrets_directory = completed_process.stdout.decode()[:-1]
     completed_process = subprocess.run(['cygpath','-w',repository_top_directory + '/pgdata'],capture_output=True)    
-    pgdata_directory = completed_process.stdout.decode()
+    pgdata_directory = completed_process.stdout.decode()[:-1]
 else:
     secrets_directory = repository_top_directory + '/secrets'
     pgdata_directory = repository_top_directory + '/pgdata'
