@@ -612,16 +612,18 @@ ${{SUDOPREFIX}}./build.sh
 if [[ ${{MACHTYPE%cygwin}} = $MACHTYPE ]]
 then
     SUDOPREFIX='sudo '
+    PASSWORD_PATH='{project.secrets_directory}/password'
 else
     SUDOPREFIX=''
+    PASSWORD_PATH='{project.secrets_directory}\password'
 fi
 # Check that a secrets subdirectory exists
-if [[ ! -d {project.secrets_directory} ]]
+if [[ ! -d '{project.secrets_directory}' ]]
 then
-    echo Secrets directory {project.secrets_directory} does not exist.
+    echo Secrets directory '{project.secrets_directory}' does not exist.
     exit
 fi
-if [[ ! -r {project.secrets_directory}/password ]]
+if [[ ! -r $PASSWORD_PATH ]]
 then
     echo 'password' file does not exist in secrets directory.
 fi
