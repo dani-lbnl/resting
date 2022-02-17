@@ -13,23 +13,19 @@
 
 ### How do I get set up? ###
 
-* Summary of set up
-    * Clone the RESTInG repository with a command such as "git clone https://github.com/dani-lbnl/resting.git".
-    * It is likely that Python 3 is already available on the "development system," the computer on which RESTInG will run. On the Debian 10 computer on which RESTInG was developed, Python 3 can be installed by running "apt-get install python3", if needed.
-    * Sphinx must be available to build the documentation. On the Debian 10 computer on which RESTInG was developed, Sphinx can be installed by running "apt-get install python3-sphinx".
-    * Build the documentation: from the "resting" subdirectory, run sphinx.sh using "./sphinx.sh" or a command such as "sh sphinx.sh". The script will provide the name of a local file (and a corresponding URL) for the documentation index. It can be viewed with a web browser. Click on the "Setup" link for continued setup instructions.
-* Dependencies
-    * Docker
-        * Official Python 3 image
-            * Includes Django
-        * Django REST framework (Python 3 version)
-        * Apache 2
-	* PostgreSQL
-    * Python 3
-    * Sphinx (Python 3 version)
-    
-* Deployment instructions
-    * The Docker images produced by this tool can run on the NERSC Spin platform or on a standalone server. The documentation provides instructions for both hosting options.
+* Several software packages must be available on the computer on which RESTInG will be run, which we will call the "development system."
+  * On a Debian 10 computer, run "apt-get install git python3 python3-sphinx"
+  * On a Mac OS X computer, as an Administrator:
+    * Open a Terminal and run "git"; if you receive an error, you may need to run "xcode-select --install" (see https://apple.stackexchange.com/questions/254380/why-am-i-getting-an-invalid-active-developer-path-when-attempting-to-use-git-a).
+    * Install the Sphinx Documentation Generator using one of the options described here: https://www.sphinx-doc.org/en/master/usage/installation.html
+      * Running "pip3 install -U sphinx" in a Terminal is likely the easiest approach
+  * On a Windows 10 computer, as an Administrator:
+    * Install Cygwin (download setup-x86_64.exe from http://www.cygwin.org/ and verify the file using the available signature), and through the Cygwin Setup program, mark the latest versions of the git, python39, python39-sphinx, python39-sphinxcontrib-applehelp, python39-sphinxcontrib-devhelp, python39-sphinxcontrib-htmlhelp, python39-sphinxcontrib-qthelp, and python39-alabaster packages for installation.
+    * Go to https://docs.docker.com/desktop/windows/install/ and follow the Docker Desktop installation directions. Please note that use of Docker Desktop may require a Docker subscription, as noted on the site.
+* From a terminal window (Linux) or a Cygwin terminal (Windows):
+  * Clone the RESTInG repository by running "git clone https://github.com/dani-lbnl/resting.git".
+  * Build the documentation: from the "resting" subdirectory of the cloned repository, run sphinx.sh using "./sphinx.sh" or a command such as "bash sphinx.sh". The script will provide the name of a local file (and a corresponding URL) for the documentation index, which can be viewed with a web browser. Unfortunately, on a Windows computer, the file path is only recognizable to programs installed under Cygwin, so one will typically instead direct a web browser to a file such as "C:\cygwin64\home\<username>\resting\doc\_build\html\index.html", or a corresponding URL such as "file:///C:/cygwin64/home/<username>/resting/doc/_build/html/index.html"
+  * Click on the "Setup" link on the documentation page for continued setup instructions.
     
 ### Contribution guidelines ###
 * Writing tests

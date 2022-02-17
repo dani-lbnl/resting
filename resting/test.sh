@@ -11,9 +11,9 @@ else
     exit
 fi
 CWD=`pwd`
-. start.sh
+./start.sh
 cd $CWD
-. finish.sh
+./finish.sh
 cd $CWD
-. run.sh
+./run.sh
 $PYTHON tests.py

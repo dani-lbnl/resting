@@ -480,6 +480,7 @@ RUN cp /srv/website/templates/* /usr/lib/python3/dist-packages/rest_framework/te
 CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
 '''
 else:
+    # I frequently run into a problem with psycopg2; import psycopg2 attempts to import from psycopg2._psycopg, a module that does not exist, but is supposed to be part of the same package. This was why I switched from python:3.8 to python:3.7 when working on a Linux system, but it seems that this does not work on a Windows system, which might require yet another version.
     website_dockerfile_template = f'''
 # There are version problems with mod_wsgi and psycopg2 in the latest (3.8) image, so stay with 3.7
 FROM python:3.7
@@ -524,6 +525,12 @@ if project.platform == 'spin':
 APP_NAME={project.app_name}
 cd ..
 TOP=`pwd`
+if [[ ${MACHTYPE%cygwin}=$MACHTYPE ]]
+then
+    SUDOPREFIX='sudo '
+else
+    SUDOPREFIX=''
+fi
 # Generate the site documentation
 cd $TOP/webserver/doc
 make html
@@ -535,10 +542,10 @@ cd $TOP
 # If already authenticated, this doesn't do any harm:
 docker login registry.nersc.gov
 cd postgres
-sudo ./build.sh
+${SUDOPREFIX}./build.sh
 docker push {tag_prefix}{project.app_name}_postgres:12
 cd ../webserver
-sudo ./build.sh
+${SUDOPREFIX}./build.sh
 docker push {tag_prefix}{project.app_name}_webserver:3.7
 '''
     
@@ -551,6 +558,12 @@ else:
 APP_NAME={project.app_name}
 cd ..
 TOP=`pwd`
+if [[ ${MACHTYPE%cygwin}=$MACHTYPE ]]
+then
+    SUDOPREFIX='sudo '
+else
+    SUDOPREFIX=''
+fi
 # Seems to be necessary to allow the postgres user in the Postgres container to run initdb
 chmod a+w {project.pgdata_directory}
 # Generate the site documentation
@@ -563,13 +576,19 @@ cp -R * $TOP/webserver/website/$APP_NAME/static/$APP_NAME/doc
 cd $TOP
 # Assume that there's no need to push to a repository
 cd postgres
-sudo ./build.sh
+${SUDOPREFIX}./build.sh
 cd ../webserver
-sudo ./build.sh
+${SUDOPREFIX}./build.sh
 '''
     # https://docs.docker.com/network/bridge/
     run_template = f'''
 #!/bin/sh
+if [[ ${MACHTYPE%cygwin}=$MACHTYPE ]]
+then
+    SUDOPREFIX='sudo '
+else
+    SUDOPREFIX=''
+fi
 # Check that a secrets subdirectory exists
 if [[ ! -d {project.secrets_directory} ]]
 then
@@ -583,13 +602,13 @@ fi
 # Create user-defined bridge network if one doesn't already exist
 if [[ `docker network ls -f name={project.app_name}_network | wc -l` -eq 1 ]]
 then
-    docker network create {project.app_name}_network
+    ${SUDOPREFIX}docker network create {project.app_name}_network
 fi
 # The custom entry point script expects this image to be run with the -it flags
-. run_db.sh
-. run_ws.sh
+./run_db.sh
+./run_ws.sh
 # Execute shell, allowing user to perform final configuration
-docker exec -it ws /bin/bash /initialize.sh
+${SUDOPREFIX}docker exec -it ws /bin/bash /initialize.sh
 '''
 
     generate(run_template,script_directory + 'run.sh')
