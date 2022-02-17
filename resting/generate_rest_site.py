@@ -522,6 +522,17 @@ if project.platform == 'spin':
     
     finish_template = f'''
 #!/bin/sh
+# Check for Python executable name
+if python3 -V
+then
+    PYTHON=python3
+elif python -V
+then
+    PYTHON=python
+else
+    echo Could not find Python executable, edit start.sh and set the PYTHON variable to the executable location.
+    exit
+fi
 # Assume that we're starting in the resting directory, should check for this
 APP_NAME={project.app_name}
 cd ..
@@ -534,7 +545,7 @@ else
 fi
 # Generate the site documentation
 cd $TOP/webserver/doc
-make html
+make SPHINXBUILD="$PYTHON -m sphinx.cmd.build" html
 # Copy the site documentation to the doc subdirectory of the app static directory
 # Might be able to just link instead
 cd $TOP/webserver/doc/_build/html
@@ -555,6 +566,17 @@ else:
     
     finish_template = f'''
 #!/bin/sh
+# Check for Python executable name
+if python3 -V
+then
+    PYTHON=python3
+elif python -V
+then
+    PYTHON=python
+else
+    echo Could not find Python executable, edit start.sh and set the PYTHON variable to the executable location.
+    exit
+fi
 # Assume that we're starting in the resting directory, should check for this
 APP_NAME={project.app_name}
 cd ..
@@ -569,7 +591,7 @@ fi
 chmod a+w {project.pgdata_directory}
 # Generate the site documentation
 cd $TOP/webserver/doc
-make html
+make SPHINXBUILD="$PYTHON -m sphinx.cmd.build" html
 # Copy the site documentation to the doc subdirectory of the app static directory
 # Might be able to just link instead
 cd $TOP/webserver/doc/_build/html
