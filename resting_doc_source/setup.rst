@@ -4,7 +4,9 @@ Setup
 Docker
 ------
 
-To use RESTInG to deploy a service, one first works from a computer (the "development system") to be used to build the Docker images. Docker is not needed until one is ready to deploy the data management service, following project-specific customization, but it is probably preferable to determine if Docker can be properly installed on the development system before starting this process.
+Docker images are presently required for deployment on NERSC Spin and on standalone systems. To use RESTInG to deploy a service, one first works from a computer (the "development system") to be used to build the Docker images. Docker is not needed until one is ready to deploy the data management service, following project-specific customization, but it is probably preferable to determine if Docker can be properly installed on the development system before starting this process. 
+
+On a Windows or Mac computer, go to https://docs.docker.com/get-docker/ and follow the appropriate Docker Desktop installation directions, then start Docker Desktop. Please note that use of Docker Desktop may require a Docker subscription, as noted on the site.
 
 On the Debian 10 computer on which RESTInG was developed, it was necessary to install the docker.io package, which can be done by running::
 
