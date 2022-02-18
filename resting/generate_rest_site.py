@@ -452,7 +452,7 @@ if project.platform == 'spin':
 
     website_dockerfile_template = f'''
 # There are version problems with mod_wsgi and psycopg2 in the latest (3.8) image, so stay with 3.7
-FROM python:3.7
+FROM python:3.9
 
 RUN apt-get update && apt-get -y install python3-djangorestframework apache2 libapache2-mod-wsgi-py3 python3-djangorestframework-filters
 
@@ -485,15 +485,15 @@ else:
     # It appears that there is something wrong with the Debian package python3-psycopg2. Removing it and installing through pip3 appears to work.
     website_dockerfile_template = f'''
 # There are version problems with mod_wsgi and psycopg2 in the latest (3.8) image, so stay with 3.7
-FROM python:3.7
+FROM python:3.9
 
 RUN apt-get update && apt-get -y install python3-djangorestframework apache2 libapache2-mod-wsgi-py3 python3-djangorestframework-filters
 
 # Django 2.2 and psycopg 2.9 don't play well together
 # https://github.com/psycopg/psycopg2/issues/1293
 # https://stackoverflow.com/questions/68024060/assertionerror-database-connection-isnt-set-to-utc
-# python3-psycopg2 seems to install for Python 3.9! pip3 installs for Python 3.7 as it should. But it seems like Python 3.9 runs at some point, so both need to be present! But then if I purge the Debian python3-psycopg2 package, the website initialization fails!
-RUN apt-get -y purge python3-psycopg2 && pip3 install psycopg2==2.8.6 && apt-get -y install python3-psycopg2
+# python3-psycopg2 seems to install for Python 3.9! pip3 installs for Python 3.7 as it should. But it seems like Python 3.9 runs at some point, so both need to be present! But then if I purge the Debian python3-psycopg2 package, the website initialization fails! Why should 3.9 be in the 3.7 image? And yet it is definitely there.
+#RUN apt-get -y purge python3-psycopg2 && pip3 install psycopg2==2.8.6 && apt-get -y install python3-psycopg2
 
 ENV PYTHONPATH /usr/lib/python3/dist-packages
 
