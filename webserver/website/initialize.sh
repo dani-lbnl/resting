@@ -1,6 +1,5 @@
-#!/bin/bash
+#!/bin/sh
 cd /srv/website
-python makemigrations
-python migrate
-python createsuperuser
-
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
