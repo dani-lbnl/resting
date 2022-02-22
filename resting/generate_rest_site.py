@@ -317,7 +317,7 @@ generate(serializers_template,app_directory + 'serializers.py')
 
 def router_registrations():
 
-    if index_template == '' or project.api_prefix == '':
+    if project.index_template == '' or project.api_prefix == '':
         # API root page will be the landing page
         return_value = '''
 router = DefaultRouter()
@@ -404,8 +404,12 @@ if project.platform == 'spin':
 
     apache2_template = ''
 
-else: 
-    docker_python_version = 3.9
+else:
+    if project.platform == 'linux':
+        docker_python_version = 3.7
+        
+    elif project.platform == 'cygwin' or project_platform == 'mac':
+        docker_python_version = 3.9
     
     # Set up SSL
     # See file:///usr/share/doc/apache2-doc/manual/en/ssl/ssl_howto.html
@@ -426,7 +430,7 @@ Redirect "/" "https://{project.server_name}/"'''
 /^\t*SSLCertificateKeyFile/c\
 		SSLCertificateKeyFile {project.ssl_certificate_key_file}
 '''
-    generate(ssl_template,apache_directory + 'default-ssl.conf.sed')
+    generate(ssl_template,apache_directory + 'default-ssl.conf.sed')    
     
 apache2_template += '''
 Alias /static/ /srv/static/
