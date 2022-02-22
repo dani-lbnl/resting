@@ -491,7 +491,7 @@ RUN cp /srv/website/templates/* /usr/lib/python3/dist-packages/rest_framework/te
 CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
 '''
 else:
-    if platform == 'linux':
+    if project.platform == 'linux':
         backend = 'rest_framework_filters.backends.DjangoFilterBackend'
     else:
         backend = 'rest_framework_filters.backends.RestFrameworkFilterBackend'
