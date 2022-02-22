@@ -17,7 +17,7 @@ if not os.access(app_directory,os.F_OK):
 site_directory = website_directory + 'website/'
 template_directory = website_directory + 'templates/'
 
-### Will might want to use a class-based approach that can retrieve and hold information until a new query dict is provided
+### Might want to use a class-based approach that can retrieve and hold information until a new query dict is provided
 
 def validate_descriptions(model_descriptions):
     ''' Check the user-provided model description, throwing an Exception if an error is encountered. If the description passes this check, a form that adheres to this description will only be invalid if it contains bad filter value specifications.
@@ -276,7 +276,6 @@ def serializer_classes():
     for model in project.models:
         # The 'id' automatic primary field is always included because dependent records will submit queries through the web interface to find related objects and will need this information to save references to other objects. Apparently, there is a built-in restriction in Django REST Framework that prevents the record input forms from allowing modification of the 'id' field.
         #### It might be a mistake to use the HyperlinkModelSerializer rather than just the ModelSerializer because we have 'url' fields in the data, which are supposed to also be used internally.
-        #### In order to follow model relationships in the reverse direction, we will probably have to add the fields explicitly here. This means searching project.py for relevant models.
         serializer_template_head = f'''
 from {project.app_name}.models import {model}
 
@@ -318,7 +317,7 @@ generate(serializers_template,app_directory + 'serializers.py')
 
 def router_registrations():
 
-    if project.api_prefix == '':
+    if index_template == '' or project.api_prefix == '':
         # API root page will be the landing page
         return_value = '''
 router = DefaultRouter()
@@ -401,10 +400,13 @@ urlpatterns = [
 generate(urls_template,site_directory + 'urls.py')
 
 if project.platform == 'spin':
-    
+    docker_python_version = 3.7
+
     apache2_template = ''
 
-else:
+else: 
+    docker_python_version = 3.9
+    
     # Set up SSL
     # See file:///usr/share/doc/apache2-doc/manual/en/ssl/ssl_howto.html
     # Force redirection from http to https
@@ -451,8 +453,8 @@ generate(apache2_template,apache_directory + 'append_to_apache2.conf')
 if project.platform == 'spin':
 
     website_dockerfile_template = f'''
-# There are version problems with mod_wsgi and psycopg2 in the latest (3.8) image, so stay with 3.7
-FROM python:3.9
+# There are version problems with mod_wsgi and psycopg2 in the 3.8 image, so I stayed with 3.7 initially, but on the Windows and Mac images, this leads to problems with psychopg2. Fortunately, 3.9 seems to work on Windows and Mac. However, on Spin, 3.7 works just fine.
+FROM python:{docker_python_version}
 
 RUN apt-get update && apt-get -y install python3-djangorestframework apache2 libapache2-mod-wsgi-py3 python3-djangorestframework-filters
 
@@ -483,17 +485,16 @@ CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
 else:
     # I encountered a problem with psycopg2 on Windows and Mac installations; import psycopg2 attempts to import from psycopg2._psycopg, a module that does not exist, but is supposed to be part of the same package. 
     # It appears that there is something wrong with the Debian package python3-psycopg2. Removing it and installing through pip3 appears to work.
-    website_dockerfile_template = f'''
-# There are version problems with mod_wsgi and psycopg2 in the latest (3.8) image, so stay with 3.7
-FROM python:3.9
-
-RUN apt-get update && apt-get -y install python3-djangorestframework apache2 libapache2-mod-wsgi-py3 python3-djangorestframework-filters
-
 # Django 2.2 and psycopg 2.9 don't play well together
 # https://github.com/psycopg/psycopg2/issues/1293
 # https://stackoverflow.com/questions/68024060/assertionerror-database-connection-isnt-set-to-utc
 # python3-psycopg2 seems to install for Python 3.9! pip3 installs for Python 3.7 as it should. But it seems like Python 3.9 runs at some point, so both need to be present! But then if I purge the Debian python3-psycopg2 package, the website initialization fails! Why should 3.9 be in the 3.7 image? And yet it is definitely there.
 #RUN apt-get -y purge python3-psycopg2 && pip3 install psycopg2==2.8.6 && apt-get -y install python3-psycopg2
+    website_dockerfile_template = f'''
+# There are version problems with mod_wsgi and psycopg2 in the 3.8 image, so I stayed with 3.7 initially, but on the Windows and Mac images, this leads to problems with psychopg2. Fortunately, 3.9 seems to work on Windows and Mac.
+FROM python:{docker_python_version}
+
+RUN apt-get update && apt-get -y install python3-djangorestframework apache2 libapache2-mod-wsgi-py3 python3-djangorestframework-filters
 
 ENV PYTHONPATH /usr/lib/python3/dist-packages
 
@@ -565,7 +566,7 @@ ${{SUDOPREFIX}}./build.sh
 docker push {tag_prefix}{project.app_name}_postgres:12
 cd ../webserver
 ${{SUDOPREFIX}}./build.sh
-docker push {tag_prefix}{project.app_name}_webserver:3.7
+docker push {tag_prefix}{project.app_name}_webserver:{docker_python_version}
 '''
     
 else:
@@ -654,7 +655,7 @@ docker run -itd --network={project.app_name}_network -h db --mount type=bind,src
     os.chmod(script_directory + 'run_db.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
 
     run_ws_template = f'''
-docker run -d --network={project.app_name}_network -h ws --mount type=bind,src='{project.secrets_directory}',dst=/secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 80:80/tcp -p 443:443/tcp --name ws {project.app_name}_webserver:3.7
+docker run -d --network={project.app_name}_network -h ws --mount type=bind,src='{project.secrets_directory}',dst=/secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 80:80/tcp -p 443:443/tcp --name ws {project.app_name}_webserver:{docker_python_version}
 '''
     generate(run_ws_template,script_directory + 'run_ws.sh')
     os.chmod(script_directory + 'run_ws.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
@@ -666,7 +667,7 @@ docker build -t {tag_prefix}{project.app_name}_postgres:12 .
 
 website_build_template = f'''
 #!/bin/bash
-docker build -t {tag_prefix}{project.app_name}_webserver:3.7 .
+docker build -t {tag_prefix}{project.app_name}_webserver:{docker_python_version} .
 '''
         
 generate(postgres_build_template,database_directory + 'build.sh')

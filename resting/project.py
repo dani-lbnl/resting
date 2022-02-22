@@ -46,6 +46,7 @@ index_template = ''
 ## API
 
 # Blank or null will use the default URL scheme, with the API root as the default landing page
+# This is ignored if a homepage template is not given above
 api_prefix = 'api'
 
 # Description format:
