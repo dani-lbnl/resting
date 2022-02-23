@@ -139,7 +139,7 @@ else:
 
 index_html_template = '''{% extends "rest_framework/base.html" %}
 {% block branding %}
-''' + f'''<a class='navbar-brand' rel='nofollow' href='{api_resource}'>Go to API</a>''' + f'''<a class='navbar-brand' rel='nofollow' href='/static/{project.app_name}/doc/'>Go to documentation</a>''' + '''
+''' + f'''<p><a class='body' rel='nofollow' href='{api_resource}'>Go to API</a></p><p><a class='body' rel='nofollow' href='/static/{project.app_name}/doc/'>Go to documentation</a></p>''' + '''
 {% endblock %}
 '''
 
