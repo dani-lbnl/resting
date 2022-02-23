@@ -605,7 +605,7 @@ STATICFILES_DIRS = [\
 #DEBUG = False
 '''
 
-generate(sed_script_setttings_template,site_directory + 'sed_script_setttings.py')    
+generate(sed_script_settings_template,site_directory + 'sed_script_settings.py')    
 generate(website_dockerfile_template,webserver_directory + 'Dockerfile')
 
 if project.platform == 'spin':
