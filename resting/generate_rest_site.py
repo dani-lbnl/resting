@@ -130,10 +130,10 @@ def generate(template,full_path):
     with open(full_path,'w') as output_file:
         print(template,file=output_file)
 
-if api_prefix == '':
+if project.api_prefix == '':
     api_resource = ''
 else:
-    api_resource = api_prefix + '/'
+    api_resource = project.api_prefix + '/'
 
 ## index.html
 
