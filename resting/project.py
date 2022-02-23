@@ -40,8 +40,8 @@ ssl_certificate_key_file = '/etc/ssl/private/ssl-cert-snakeoil.key'
 ## Homepage
 
 # This is the Django template for the site homepage, assumed to be in the webserver/website/templates directory within the repository. If blank, the API root will be the site homepage.
-index_template = ''
-#index_template = 'index.html'
+#index_template = ''
+index_template = 'index.html'
 
 ## API
 

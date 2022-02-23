@@ -130,11 +130,26 @@ def generate(template,full_path):
     with open(full_path,'w') as output_file:
         print(template,file=output_file)
 
+if api_prefix == '':
+    api_resource = ''
+else:
+    api_resource = api_prefix + '/'
+
+## index.html
+
+index_html_template = '''{% extends "rest_framework/base.html" %}
+{% block branding %}
+''' + f'''<a class='navbar-brand' rel='nofollow' href='{api_resource}'>Go to API</a>''' + f'''<a class='navbar-brand' rel='nofollow' href='/static/{project.app_name}/doc/'>Go to documentation</a>''' + '''
+{% endblock %}
+'''
+
+generate(index_html_template,template_directory + 'index.html')
+
 ## api.html
 
 api_html_template = '''{% extends "rest_framework/base.html" %}
 {% block branding %}
-''' + f'''<a class='navbar-brand' rel='nofollow' href='https://{project.server_name}'>{project.server_name}</a>''' + '''
+''' + f'''<a class='navbar-brand' rel='nofollow' href='/'>{project.server_name}</a>''' + '''
 {% endblock %}
 '''
 
@@ -536,6 +551,7 @@ RUN cp /srv/website/templates/* /usr/lib/python3/dist-packages/rest_framework/te
 CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
 '''
 
+# Double-backslashes are interpreted as single backslashes, which quote newlines to sed
 sed_script_settings_template = f'''
 /import os/a\\
 import hashlib
@@ -844,35 +860,35 @@ API
 Examples
 ========
 
-https://{project.server_name}/api/\ **model**\ /
+https://{project.server_name}/{api_resource}\ **model**\ /
 
 To apply a **filter** described by a single **value** to a **field** and access the first page of matching **Model** records in HTML format, use:
 
-https://{project.server_name}/api/\ **model**\ /?\ **field**\ __\ **filter**\ =\ **value**
+https://{project.server_name}/{api_resource}\ **model**\ /?\ **field**\ __\ **filter**\ =\ **value**
 
 To apply a **filter** described by **value1** and **value2** to a **field** and access the first page of matching **Model** records in HTML format, use:
 
-https://{project.server_name}/api/\ **model**\ /?\ **field**\ __\ **filter**\ =\ **value1**\ %2C\ **value2**
+https://{project.server_name}/{api_resource}\ **model**\ /?\ **field**\ __\ **filter**\ =\ **value1**\ %2C\ **value2**
 
 or
 
-https://{project.server_name}/api/\ **model**\ /?\ **field**\ __\ **filter**\ =\ **value1**\ ,\ **value2**
+https://{project.server_name}/{api_resource}\ **model**\ /?\ **field**\ __\ **filter**\ =\ **value1**\ ,\ **value2**
 
 and likewise for additional values.
 
 To apply a **filter** described by a single **value** to a **field** and access page **N** of matching **Model** records in HTML format, use:
 
-https://{project.server_name}/api/\ **model**\ /?page=\ **N**\ &\ **field**\ __\ **filter**\ =\ **value**
+https://{project.server_name}/{api_resource}\ **model**\ /?page=\ **N**\ &\ **field**\ __\ **filter**\ =\ **value**
 
 To apply both **filter1** described by a single **value1** and **filter2** described by a single **value2** to a **field** and access the first page of matching **Model** records in HTML format, use:
 
-https://{project.server_name}/api/\ **model**\ /?\ **field**\ __\ **filter1**\ =\ **value1**\ &\ **field**\ __\ **filter2**\ =\ **value2**
+https://{project.server_name}/{api_resource}\ **model**\ /?\ **field**\ __\ **filter1**\ =\ **value1**\ &\ **field**\ __\ **filter2**\ =\ **value2**
 
 and likewise for additional fields and filters.
 
 To apply a **filter** described by a single **value** to a **field** and access the first page of matching **Model** records in JSON format, use:
 
-https://{project.server_name}/api/\ **model**\ /?\ **field**\ __\ **filter**\ =\ **value**\ &format=json
+https://{project.server_name}/{api_resource}\ **model**\ /?\ **field**\ __\ **filter**\ =\ **value**\ &format=json
 
 Available models, fields, and filters
 =====================================
