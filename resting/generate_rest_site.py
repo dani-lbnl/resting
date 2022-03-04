@@ -671,7 +671,7 @@ docker push {tag_prefix}{project.app_name}_webserver:{docker_python_version}
 '''
     
 else:
-    assert project.engine in ('docker','podman'):
+    assert project.engine in ('docker','podman')
         
     tag_prefix = ''
     
@@ -736,7 +736,7 @@ then
     echo 'password' file does not exist in secrets directory.
 fi
 # Create user-defined bridge network if one doesn't already exist
-if [[ `{project.engine} network ls -f name={project.app_name}_network | wc -l` -eq 1 ]]
+if [[ `${{SUDOPREFIX}}{project.engine} network ls -f name={project.app_name}_network | wc -l` -eq 1 ]]
 then
     ${{SUDOPREFIX}}{project.engine} network create {project.app_name}_network
 fi
