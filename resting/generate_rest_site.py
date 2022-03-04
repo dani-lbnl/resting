@@ -670,7 +670,7 @@ docker push {tag_prefix}{project.app_name}_webserver:{docker_python_version}
 '''
     
 else:
-    assert project.engine in ('docker','podman'):
+    assert project.engine in ('docker','podman')
         
     tag_prefix = ''
     
