@@ -416,17 +416,17 @@ generate(urls_template,site_directory + 'urls.py')
 
 if project.platform == 'spin':
     # Haven't tested 3.9, but this is known to work
-    docker_python_version = 3.7
+    docker_python_version = '3.7'
 
     apache2_template = ''
 
 else:
     if project.platform == 'linux':
         # Ran into signature validation problem with 3.9
-        docker_python_version = 3.7
+        docker_python_version = '3.7'
         
     elif project.platform == 'cygwin' or project_platform == 'mac':
-        docker_python_version = 3.9
+        docker_python_version = '3.9'
     
     # Set up SSL
     # See file:///usr/share/doc/apache2-doc/manual/en/ssl/ssl_howto.html
@@ -506,9 +506,11 @@ RUN cp /srv/website/templates/* /usr/lib/python3/dist-packages/rest_framework/te
 CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
 '''
 else:
-    if project.platform == 'linux':
+    if docker_python_version == '3.7':
+        psycopg_fix = '&& apt-get -y purge python3-psycopg2 && pip3 install psycopg2==2.8.6'        
         backend = 'rest_framework_filters.backends.DjangoFilterBackend'
     else:
+        psycopg_fix = ''
         backend = 'rest_framework_filters.backends.RestFrameworkFilterBackend'
 
     # I encountered a problem with psycopg2 on Windows and Mac installations; import psycopg2 attempts to import from psycopg2._psycopg, a module that does not exist, but is supposed to be part of the same package. 
@@ -517,12 +519,11 @@ else:
 # https://github.com/psycopg/psycopg2/issues/1293
 # https://stackoverflow.com/questions/68024060/assertionerror-database-connection-isnt-set-to-utc
 # python3-psycopg2 seems to install for Python 3.9! pip3 installs for Python 3.7 as it should. But it seems like Python 3.9 runs at some point, so both need to be present! But then if I purge the Debian python3-psycopg2 package, the website initialization fails! Why should 3.9 be in the 3.7 image? And yet it is definitely there.
-#RUN apt-get -y purge python3-psycopg2 && pip3 install psycopg2==2.8.6 && apt-get -y install python3-psycopg2
     website_dockerfile_template = f'''
-# There are version problems with mod_wsgi and psycopg2 in the 3.8 image, so I stayed with 3.7 initially, but on the Windows and Mac images, this leads to problems with psychopg2. Fortunately, 3.9 seems to work on Windows and Mac.
+# There are version problems with mod_wsgi and psycopg2 in the 3.8 image, so I stayed with 3.7 initially, but on the Windows and Mac images, this leads to problems with psycopg2. Fortunately, 3.9 seems to work on Windows and Mac.
 FROM python:{docker_python_version}
 
-RUN apt-get update && apt-get -y install python3-djangorestframework apache2 libapache2-mod-wsgi-py3 python3-djangorestframework-filters
+RUN apt-get update && apt-get -y install python3-djangorestframework apache2 libapache2-mod-wsgi-py3 python3-djangorestframework-filters {psycopg_fix}
 
 ENV PYTHONPATH /usr/lib/python3/dist-packages
 
@@ -670,7 +671,7 @@ docker push {tag_prefix}{project.app_name}_webserver:{docker_python_version}
 '''
     
 else:
-    assert project.engine in ('docker','podman')
+    assert project.engine in ('docker','podman'):
         
     tag_prefix = ''
     
