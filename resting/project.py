@@ -19,6 +19,7 @@ NERSC_project_id = ''
 
 server_name = 'localhost'
 platform = 'linux'
+engine = 'docker'
 
 # These are the file locations in the host filesystem, as needed on a standalone server
 # Under Cygwin on a Windows computer, these must be translated to be recognized by Docker, which is installed separately

@@ -625,6 +625,7 @@ generate(sed_script_settings_template,site_directory + 'sed_script_settings.py')
 generate(website_dockerfile_template,webserver_directory + 'Dockerfile')
 
 if project.platform == 'spin':
+    # Spin requires Docker
     tag_prefix = f'registry.nersc.gov/{project.NERSC_project_id}/'
     
     finish_template = f'''
@@ -669,6 +670,8 @@ docker push {tag_prefix}{project.app_name}_webserver:{docker_python_version}
 '''
     
 else:
+    assert project.engine in ('docker','podman'):
+        
     tag_prefix = ''
     
     finish_template = f'''
@@ -732,42 +735,53 @@ then
     echo 'password' file does not exist in secrets directory.
 fi
 # Create user-defined bridge network if one doesn't already exist
-if [[ `docker network ls -f name={project.app_name}_network | wc -l` -eq 1 ]]
+if [[ `{project.engine} network ls -f name={project.app_name}_network | wc -l` -eq 1 ]]
 then
-    ${{SUDOPREFIX}}docker network create {project.app_name}_network
+    ${{SUDOPREFIX}}{project.engine} network create {project.app_name}_network
 fi
 # The custom entry point script expects this image to be run with the -it flags
 ${{SUDOPREFIX}}./run_db.sh
 ${{SUDOPREFIX}}./run_ws.sh
 # Execute shell, allowing user to perform final configuration
 # The database might not yet be initialized by this point, so it is better to handle this manually
-#${{SUDOPREFIX}}docker exec -it ws /bin/bash /srv/website/initialize.sh
+#${{SUDOPREFIX}}{project.engine} exec -it ws /bin/bash /srv/website/initialize.sh
 '''
 
     generate(run_template,script_directory + 'run.sh')
     os.chmod(script_directory + 'run.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
 
     run_db_template = f'''
-docker run -itd --network={project.app_name}_network -h db --mount type=bind,src='{project.secrets_directory}',dst=/secrets --mount type=bind,src='{project.pgdata_directory}',dst=/var/lib/postgres -e POSTGRES_PASSWORD_FILE=/secrets/password -e PGDATA=/var/lib/postgres/data --name db {project.app_name}_postgres:12
+{project.engine} run -itd --network={project.app_name}_network -h db --mount type=bind,src='{project.secrets_directory}',dst=/secrets --mount type=bind,src='{project.pgdata_directory}',dst=/var/lib/postgres -e POSTGRES_PASSWORD_FILE=/secrets/password -e PGDATA=/var/lib/postgres/data --name db {project.app_name}_postgres:12
 '''
     generate(run_db_template,script_directory + 'run_db.sh')
     os.chmod(script_directory + 'run_db.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
 
     run_ws_template = f'''
-docker run -d --network={project.app_name}_network -h ws --mount type=bind,src='{project.secrets_directory}',dst=/secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 80:80/tcp -p 443:443/tcp --name ws {project.app_name}_webserver:{docker_python_version}
+{project.engine} run -d --network={project.app_name}_network -h ws --mount type=bind,src='{project.secrets_directory}',dst=/secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 80:80/tcp -p 443:443/tcp --name ws {project.app_name}_webserver:{docker_python_version}
 '''
     generate(run_ws_template,script_directory + 'run_ws.sh')
     os.chmod(script_directory + 'run_ws.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
 
-postgres_build_template = f'''
+if project.platform == 'spin':
+    postgres_build_template = f'''
 #!/bin/bash
 docker build -t {tag_prefix}{project.app_name}_postgres:12 .
 '''
 
-website_build_template = f'''
+    website_build_template = f'''
 #!/bin/bash
 docker build -t {tag_prefix}{project.app_name}_webserver:{docker_python_version} .
 '''
+else:
+    postgres_build_template = f'''
+#!/bin/bash
+{project.engine} build -t {tag_prefix}{project.app_name}_postgres:12 .
+'''
+
+    website_build_template = f'''
+#!/bin/bash
+{project.engine} build -t {tag_prefix}{project.app_name}_webserver:{docker_python_version} .
+'''    
         
 generate(postgres_build_template,database_directory + 'build.sh')
 os.chmod(database_directory + 'build.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)

@@ -46,7 +46,9 @@ The ``resting/project.py`` file should be customized the needs of one's project 
 
  - ``models``, a Python dictionary that describes the data to be accessible through the web interface, described in detail in the upcoming subsection.
 
- - ``platform``, which should be set to ``'spin'`` for deployment on NERSC Spin, or ``'standalone'`` for deployment to a standalone server. For standalone deployment, the following variables must also be set:
+ - ``engine``, which should be set to ``'docker'`` or ``'podman'``; Note that podman is presently only available on Linux systems
+   
+ - ``platform``, which should be set to ``'spin'`` for deployment on NERSC Spin, or ``'linux'``, ``'mac'``, or ``'cygwin'`` as appropriate for deployment to a standalone server. For standalone deployment, the following variables must also be set:
 
    - ``secrets_directory``, a directory name expressed relative to the root directory of the repository, in which one must provide a file named ``password``, which contains only the plaintext password used for communication between the website container and the PostgreSQL container
 
