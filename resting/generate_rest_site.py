@@ -507,8 +507,11 @@ CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
 '''
 else:
     if docker_python_version == '3.7':
-        psycopg_fix = '&& apt-get -y purge python3-psycopg2 && pip3 install psycopg2==2.8.6'        
-        backend = 'rest_framework_filters.backends.DjangoFilterBackend'
+        psycopg_fix = '&& apt-get -y purge python3-psycopg2 && pip3 install psycopg2==2.8.6'
+        # This was what I originally used, but it seems to not work anymore
+        #backend = 'rest_framework_filters.backends.DjangoFilterBackend'
+        backend = 'rest_framework_filters.backends.RestFrameworkFilterBackend'
+        
     else:
         psycopg_fix = ''
         backend = 'rest_framework_filters.backends.RestFrameworkFilterBackend'
