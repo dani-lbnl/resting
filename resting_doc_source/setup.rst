@@ -1,31 +1,46 @@
 Setup
 =====
 
+To use RESTInG to deploy a service, one first works from a computer (the "development system") to be used to build images containing the service software. At present, RESTInG will work with the Docker and Podman systems.
+
+These systems are not needed until one is ready to deploy the data management service, following project-specific customization, but it is probably preferable to determine if they can be properly installed on the development system before starting the customization process.
+
+Docker is presently required for deployment on NERSC Spin and will work on standalone systems. Please note that use of Docker Desktop may require a paid Docker subscription.
+
+The Podman option is only available on standalone Linux systems. We understand that it is possible to run Linux virtual machines on Windows and Mac systems, although we have not tested this.
+
 Docker
 ------
 
-Docker images are presently required for deployment on NERSC Spin and on standalone systems. To use RESTInG to deploy a service, one first works from a computer (the "development system") to be used to build the Docker images. Docker is not needed until one is ready to deploy the data management service, following project-specific customization, but it is probably preferable to determine if Docker can be properly installed on the development system before starting this process. 
+On a Windows or Mac computer, go to https://docs.docker.com/get-docker/ and follow the appropriate Docker Desktop installation directions, then start Docker Desktop. 
 
-On a Windows or Mac computer, go to https://docs.docker.com/get-docker/ and follow the appropriate Docker Desktop installation directions, then start Docker Desktop. Please note that use of Docker Desktop may require a Docker subscription, as noted on the site.
-
-On the Debian 10 computer on which RESTInG was developed, it was necessary to install the docker.io package, which can be done by running::
+On the Debian 10 computer on which RESTInG was developed, it was necessary to install the docker.io package, which can be done by running as root::
 
   apt-get install docker.io
 
-..   It was also necessary to add intended Docker users to the ``docker`` group by using, for instance
+On Debian 11, one might run::
 
-..   adduser <username> docker
+  apt install docker.io
 
-..  It might be necessary to log in again under these user accounts for these changes to take effect.
+It is safest to run Docker using sudo; it may be necessary to run a command such as the following as root to gain sudo privileges::
 
+  adduser <username> sudoers
+  
 Then as outlined at https://docs.docker.com/get-started/ , one can confirm that Docker is installed properly::
 
-  docker run hello-world
-  docker image ls
-  docker ps --all
+  sudo docker run hello-world
+  sudo docker image ls
+  sudo docker ps --all
 
 The following sections describe the Docker image customization procedure in detail. A summary of the procedure appears at the end of this chapter.
-  
+
+Podman
+------
+
+Podman is available under Debian 11, and can be installed by running as root::
+
+  apt install podman
+
 Testing RESTInG
 ---------------
 

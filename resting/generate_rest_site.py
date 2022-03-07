@@ -472,7 +472,7 @@ if project.platform == 'spin':
     
     website_dockerfile_template = f'''
 # There are version problems with mod_wsgi and psycopg2 in many images
-FROM python:{docker_python_version}
+FROM docker.io/library/python:{docker_python_version}
 
 RUN apt-get update && apt-get -y install python3-djangorestframework apache2 libapache2-mod-wsgi-py3 python3-djangorestframework-filters
 
@@ -505,7 +505,7 @@ else:
 
     website_dockerfile_template = f'''
 # There are version problems with mod_wsgi and psycopg2 in many images
-FROM python:{docker_python_version}
+FROM docker.io/library/python:{docker_python_version}
 
 RUN apt-get update && apt-get -y install python3-djangorestframework apache2 libapache2-mod-wsgi-py3 python3-djangorestframework-filters
 
