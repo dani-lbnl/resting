@@ -423,7 +423,7 @@ if project.platform == 'spin':
 else:
     if project.platform == 'linux':
         # Ran into signature validation problem with 3.9
-        docker_python_version = '3.7'
+        docker_python_version = '3.9'
         
     elif project.platform == 'cygwin' or project_platform == 'mac':
         docker_python_version = '3.9'
