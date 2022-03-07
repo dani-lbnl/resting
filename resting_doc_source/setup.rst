@@ -34,12 +34,22 @@ Then as outlined at https://docs.docker.com/get-started/ , one can confirm that 
 
 The following sections describe the Docker image customization procedure in detail. A summary of the procedure appears at the end of this chapter.
 
+Note that the ``project.py`` file (to be described later) should include the following line::
+
+  engine = 'docker'
+
 Podman
 ------
 
 Podman is available under Debian 11, and can be installed by running as root::
 
   apt install podman
+
+It should not be necessary to modify /etc/containers/registries.conf because the Docker Hub registry is explicitly given in the generated Dockerfiles.
+  
+Note that the ``project.py`` file (to be described later) should include the following line::
+
+  engine = 'podman'
 
 Testing RESTInG
 ---------------

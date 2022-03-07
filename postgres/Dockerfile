@@ -1,4 +1,4 @@
-FROM postgres:12
+FROM docker.io/library/postgres:12
 
 WORKDIR /
 
