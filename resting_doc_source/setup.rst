@@ -1,13 +1,13 @@
 Setup
 =====
 
-To use RESTInG to deploy a service, one first works from a computer (the "development system") to be used to build images containing the service software. At present, RESTInG will work with the Docker and Podman systems.
+To use RESTInG to deploy a service, one first works from a computer (the "development system") to be used to build images containing the service software. At present, RESTInG will work with Docker and Podman.
 
 These systems are not needed until one is ready to deploy the data management service, following project-specific customization, but it is probably preferable to determine if they can be properly installed on the development system before starting the customization process.
 
 Docker is presently required for deployment on NERSC Spin and will work on standalone systems. Please note that use of Docker Desktop may require a paid Docker subscription.
 
-The Podman option is only available on standalone Linux systems. We understand that it is possible to run Linux virtual machines on Windows and Mac systems, although we have not tested this.
+The Podman option is only available for standalone systems running Linux. We understand that it is possible to run Linux virtual machines on Windows and Mac systems, although we have not tested this. Unfortunately, due to a bug that might be resolved in later versions than presently available through Debian 11 (see https://github.com/containers/podman/issues/11457#issuecomment-916260531), the containers cannot communicate properly. This can be repaired manually as described below.
 
 Docker
 ------
@@ -51,6 +51,19 @@ Note that the ``project.py`` file (to be described later) should include the fol
 
   engine = 'podman'
 
+Unfortunately, the hostnames given to the containers are not automatically availble; this can be fixed by first finding the IP address assigned to the database container::
+  sudo podman container inspect db | fgrep IPAddress
+
+and then starting a shell in the webserver container::
+
+  sudo podman exec -it ws /bin/bash
+
+and appending an entry for the database server to the ``/etc/hosts``::
+
+  echo '<IP address of database container> db db' >> /etc/hosts
+
+after which one can initialize the system as usual, as described in the next chapter. This process might be automated at a later time.
+  
 Testing RESTInG
 ---------------
 

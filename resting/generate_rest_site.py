@@ -501,6 +501,7 @@ RUN cp /srv/website/templates/* /usr/lib/python3/dist-packages/rest_framework/te
 CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
 '''
 else:
+    #### This might be missing an HTML template
     backend = 'rest_framework_filters.backends.RestFrameworkFilterBackend'
 
     website_dockerfile_template = f'''
