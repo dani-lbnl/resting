@@ -501,7 +501,16 @@ RUN cp /srv/website/templates/* /usr/lib/python3/dist-packages/rest_framework/te
 CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
 '''
 else:
-    #### This might be missing an HTML template
+    # Using engine django:
+
+    # django.template.loaders.filesystem.Loader: /srv/website/templates/rest_framework_filters/form.html (Source does not exist)
+    # django.template.loaders.app_directories.Loader: /usr/lib/python3/dist-packages/rest_framework/templates/rest_framework_filters/form.html (Source does not exist)
+    # django.template.loaders.app_directories.Loader: /usr/lib/python3/dist-packages/django_filters/templates/rest_framework_filters/form.html (Source does not exist)
+    # django.template.loaders.app_directories.Loader: /usr/lib/python3/dist-packages/django/contrib/postgres/templates/rest_framework_filters/form.html (Source does not exist)
+    # django.template.loaders.app_directories.Loader: /usr/lib/python3/dist-packages/django/contrib/admin/templates/rest_framework_filters/form.html (Source does not exist)
+    # django.template.loaders.app_directories.Loader: /usr/lib/python3/dist-packages/django/contrib/auth/templates/rest_framework_filters/form.html (Source does not exist)
+    #### HTML template is actually here:
+    #### /usr/lib/python3/dist-packages/rest_framework_filters/templates/rest_framework_filters/form.html
     backend = 'rest_framework_filters.backends.RestFrameworkFilterBackend'
 
     website_dockerfile_template = f'''
@@ -549,6 +558,7 @@ URL_FIELD_NAME = 'record_url'
 /^INSTALLED_APPS/a\\
     'rest_framework',\\
     'rest_framework.authtoken',\\
+    'rest_framework_filters',\\
     'django_filters',\\
     'django.contrib.postgres',
 
