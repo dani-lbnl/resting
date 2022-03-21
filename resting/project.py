@@ -87,6 +87,10 @@ models = {
             'type' : 'models.TextField(max_length=8192,blank=True)',
             'filters' : ['exact','iexact','in','istartswith','icontains','iendswith','iregex','search'],
             },
+        'filefield' : {
+            'type' : 'models.FileField(max_length=256,blank=True)',
+            'filters' : ['exact','iexact','in','istartswith','icontains','iendswith','iregex','search'],
+            },
         },
     'Dependent':{
         # # This is usually automatically added by Django
@@ -112,6 +116,13 @@ models = {
             },
         'textfield' : {
             'type' : 'models.TextField(max_length=8192,blank=True)',
+            'filters' : ['exact','iexact','in','istartswith','icontains','iendswith','iregex','search'],
+            },
+        # upload_to can be an explicit path, but defaults to FileSystemStorage and appended to MEDIA_ROOT, or can be callable
+        # Lots of useful details are provided here
+        # file:///usr/share/doc/python-django/html/ref/models/fields.html#django.db.models.FileField.upload_to
+        'filefield' : {
+            'type' : 'models.FileField(max_length=256,blank=True)',
             'filters' : ['exact','iexact','in','istartswith','icontains','iendswith','iregex','search'],
             },
         'onetoonefield' : {

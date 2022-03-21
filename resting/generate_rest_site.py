@@ -43,7 +43,12 @@ def validate_descriptions(model_descriptions):
             assert type(description[attribute]['filters']) == tuple or type(description[attribute]['filters']) == list, str(description[attribute]['filters']) + ' is not a Python tuple or list'
 
             ## Check for reasonable filter choices
-            
+            # ImageField requires Pillow
+            # file:///usr/share/doc/python-django/html/ref/forms/fields.html#django.forms.ImageField
+            # With DRF, I haven't had to create forms. Hopefully DRF is smart enough to create forms that contain file fields and are bound to uploaded files in a view
+            # file:///usr/share/doc/python-django/html/ref/forms/api.html#binding-uploaded-files
+            # It might be necessary to use a custom form
+            # file:///usr/share/doc/python-django/html/topics/http/file-uploads.html
             if field_type in [ 'models.CharField','models.TextField','models.URLField','models.EmailField','models.FileField','models.FilePathField','models.RegexField','models.SlugField','models.UUIDField','models.GenericIPAddressField','models.ImageField' ]:
            
                 for fltr in description[attribute]['filters']:
@@ -451,6 +456,12 @@ Alias /static/ /srv/static/
 Require all granted
 </Directory>
 
+Alias /media/ /srv/media/
+
+<Directory /srv/media/>
+Require all granted
+</Directory>
+
 WSGIScriptAlias / /srv/website/website/wsgi.py
 
 WSGIPythonPath /srv/website
@@ -489,7 +500,7 @@ COPY apache etc/apache2/
 # Apache configuration is done here through modification of the stock configuration files.
 # Django is then directed to create the skeleton website
 # This was the source of a helpful tip for standalone hosting: https://serverfault.com/questions/1046774/ah00035-access-to-denied-403-forbidden-django-mod-wsgi
-RUN umask 007 && chmod -R g+w /var/run/apache2 && chgrp -R root /var/log/apache2 && chmod -R g+w /var/log/apache2 && cd /etc/apache2 && cat append_to_apache2.conf >> apache2.conf && mv ports.conf dist_ports.conf && sed 's/Listen 80/Listen 8000/' dist_ports.conf > ports.conf && cd sites-available && mv 000-default.conf dist_000-default.conf && sed 's/VirtualHost \*:80/VirtualHost \*:8000/' dist_000-default.conf > 000-default.conf && chmod g+rwx /srv && cd /srv && mkdir static && chmod o+x static && chmod g+rwx static && django-admin startproject website && chmod g+rwx website && chmod a+rx website && cd website && python manage.py startapp {project.app_name}
+RUN umask 007 && chmod -R g+w /var/run/apache2 && chgrp -R root /var/log/apache2 && chmod -R g+w /var/log/apache2 && cd /etc/apache2 && cat append_to_apache2.conf >> apache2.conf && mv ports.conf dist_ports.conf && sed 's/Listen 80/Listen 8000/' dist_ports.conf > ports.conf && cd sites-available && mv 000-default.conf dist_000-default.conf && sed 's/VirtualHost \*:80/VirtualHost \*:8000/' dist_000-default.conf > 000-default.conf && chmod g+rwx /srv && cd /srv && mkdir static && chmod o+x static && chmod g+rwx static && mkdir media && chmod u+rwx media && django-admin startproject website && chmod g+rwx website && chmod a+rx website && cd website && python manage.py startapp {project.app_name}
 
 # Now that the website skeleton exists, copy in files for customization
 COPY website srv/website/
@@ -513,6 +524,7 @@ else:
     #### /usr/lib/python3/dist-packages/rest_framework_filters/templates/rest_framework_filters/form.html
     backend = 'rest_framework_filters.backends.RestFrameworkFilterBackend'
 
+    # At some point, on a standalone server, we would probably want to create a volume for media storage
     website_dockerfile_template = f'''
 # There are version problems with mod_wsgi and psycopg2 in many images
 FROM docker.io/library/python:{docker_python_version}
@@ -534,7 +546,7 @@ COPY ssl etc/ssl/
 # Apache configuration is done here through modification of the stock configuration files.
 # Django is then directed to create the skeleton website
 # This was the source of a helpful tip for standalone hosting: https://serverfault.com/questions/1046774/ah00035-access-to-denied-403-forbidden-django-mod-wsgi
-RUN umask 007 && chmod -R g+w /var/run/apache2 && chgrp -R root /var/log/apache2 && chmod -R g+w /var/log/apache2 && cd /etc/apache2 && cat append_to_apache2.conf >> apache2.conf && cd sites-available && mv default-ssl.conf default-ssl.conf.original && mv 000-default.conf 000-default.conf.original && sed -f ../default-ssl.conf.sed default-ssl.conf.original > default-ssl.conf && sed -f ../000-default.conf.sed 000-default.conf.original > 000-default.conf && cd ../sites-enabled && ln -s /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf && ln -s /etc/apache2/mods-available/ssl.conf /etc/apache2/mods-enabled && ln -s /etc/apache2/mods-available/socache_shmcb.load /etc/apache2/mods-enabled && ln -s /etc/apache2/mods-available/ssl.load /etc/apache2/mods-enabled && chmod g+rwx /srv && cd /srv && mkdir static && chmod o+x static && chmod g+rwx static && django-admin startproject website && chmod g+rwx website && chmod a+rx website && cd website && python manage.py startapp {project.app_name}
+RUN umask 007 && chmod -R g+w /var/run/apache2 && chgrp -R root /var/log/apache2 && chmod -R g+w /var/log/apache2 && cd /etc/apache2 && cat append_to_apache2.conf >> apache2.conf && cd sites-available && mv default-ssl.conf default-ssl.conf.original && mv 000-default.conf 000-default.conf.original && sed -f ../default-ssl.conf.sed default-ssl.conf.original > default-ssl.conf && sed -f ../000-default.conf.sed 000-default.conf.original > 000-default.conf && cd ../sites-enabled && ln -s /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf && ln -s /etc/apache2/mods-available/ssl.conf /etc/apache2/mods-enabled && ln -s /etc/apache2/mods-available/socache_shmcb.load /etc/apache2/mods-enabled && ln -s /etc/apache2/mods-available/ssl.load /etc/apache2/mods-enabled && chmod g+rwx /srv && cd /srv && mkdir static && chmod o+x static && chmod g+rwx static && mkdir media && chmod u+rwx media && django-admin startproject website && chmod g+rwx website && chmod a+rx website && cd website && python manage.py startapp {project.app_name}
 
 # Now that the website skeleton exists, copy in files for customization
 COPY website srv/website/
@@ -546,6 +558,7 @@ RUN cp /srv/website/templates/* /usr/lib/python3/dist-packages/rest_framework/te
 CMD ["/usr/sbin/apache2ctl","-DFOREGROUND","-kstart"]
 '''
 
+# This was helpful: https://www.dark-hamster.com/application/how-to-solve-error-message-crispy_form_tags-is-not-a-registered-library-in-django-web-application/
 # Double-backslashes are interpreted as single backslashes, which quote newlines to sed
 sed_script_settings_template = f'''
 /import os/a\\
@@ -614,6 +627,9 @@ STATICFILES_DIRS = [\\
    '/usr/lib/python3/dist-packages/django/contrib/admin/static/',\\
    '/usr/lib/python3/dist-packages/rest_framework/static/'\\
    ]\\
+# file:///usr/share/doc/python-django/html/ref/models/fields.html#django.db.models.FileField.upload_to\\
+MEDIA_URL = '/media/'\\
+MEDIA_ROOT = '/srv/media/'\\
 #DEBUG = False
 '''
 
@@ -735,6 +751,11 @@ if [[ `${{SUDOPREFIX}}{project.engine} network ls -f name={project.app_name}_net
 then
     ${{SUDOPREFIX}}{project.engine} network create {project.app_name}_network
 fi
+# Create user-defined bridge network if one doesn't already exist
+if [[ `${{SUDOPREFIX}}{project.engine} volume ls -f name={project.app_name}_media | wc -l` -eq 1 ]]
+then
+    ${{SUDOPREFIX}}{project.engine} volume create {project.app_name}_media
+fi
 # The custom entry point script expects this image to be run with the -it flags
 ${{SUDOPREFIX}}./run_db.sh
 ${{SUDOPREFIX}}./run_ws.sh
@@ -753,7 +774,7 @@ ${{SUDOPREFIX}}./run_ws.sh
     os.chmod(script_directory + 'run_db.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
 
     run_ws_template = f'''
-{project.engine} run -d --network={project.app_name}_network -h ws --mount type=bind,src='{project.secrets_directory}',dst=/secrets -e POSTGRES_PASSWORD_FILE=/secrets/password -p 80:80/tcp -p 443:443/tcp --name ws --network-alias=ws {project.app_name}_webserver:{docker_python_version}
+{project.engine} run -d --network={project.app_name}_network -h ws --mount type=bind,src='{project.secrets_directory}',dst=/secrets --mount source={project.app_name}_media,destination=/srv/media -e POSTGRES_PASSWORD_FILE=/secrets/password -p 80:80/tcp -p 443:443/tcp --name ws --network-alias=ws {project.app_name}_webserver:{docker_python_version}
 '''
     generate(run_ws_template,script_directory + 'run_ws.sh')
     os.chmod(script_directory + 'run_ws.sh',stat.S_IXUSR | stat.S_IRUSR | stat.S_IWUSR)
