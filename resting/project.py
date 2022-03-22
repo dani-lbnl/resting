@@ -89,7 +89,7 @@ models = {
             },
         'filefield' : {
             'type' : 'models.FileField(max_length=256,blank=True)',
-            'filters' : ['exact','iexact','in','istartswith','icontains','iendswith','iregex','search'],
+            'filters' : [],
             },
         },
     'Dependent':{
@@ -123,7 +123,7 @@ models = {
         # file:///usr/share/doc/python-django/html/ref/models/fields.html#django.db.models.FileField.upload_to
         'filefield' : {
             'type' : 'models.FileField(max_length=256,blank=True)',
-            'filters' : ['exact','iexact','in','istartswith','icontains','iendswith','iregex','search'],
+            'filters' : [],
             },
         'onetoonefield' : {
             'type' : 'models.OneToOneField(Independent,related_name="onetoonefield",on_delete=models.CASCADE)',
