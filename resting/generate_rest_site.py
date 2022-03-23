@@ -142,7 +142,7 @@ else:
 
 ## index.html
 
-index_html_template = '''<!DOCTYPE html>
+index_html_template = f'''<!DOCTYPE html>
 <head></head>
 <body><h1>{project.app_name} homepage</h1><p><a class='body' rel='nofollow' href='{api_resource}'>Go to API</a></p><p><a class='body' rel='nofollow' href='/static/{project.app_name}/doc/'>Go to documentation</a></p></body>
 '''
