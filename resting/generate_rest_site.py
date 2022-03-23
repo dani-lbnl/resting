@@ -500,7 +500,7 @@ COPY apache etc/apache2/
 # Apache configuration is done here through modification of the stock configuration files.
 # Django is then directed to create the skeleton website
 # This was the source of a helpful tip for standalone hosting: https://serverfault.com/questions/1046774/ah00035-access-to-denied-403-forbidden-django-mod-wsgi
-RUN umask 007 && chmod -R g+w /var/run/apache2 && chgrp -R root /var/log/apache2 && chmod -R g+w /var/log/apache2 && cd /etc/apache2 && cat append_to_apache2.conf >> apache2.conf && mv ports.conf dist_ports.conf && sed 's/Listen 80/Listen 8000/' dist_ports.conf > ports.conf && cd sites-available && mv 000-default.conf dist_000-default.conf && sed 's/VirtualHost \*:80/VirtualHost \*:8000/' dist_000-default.conf > 000-default.conf && chmod g+rwx /srv && cd /srv && mkdir static && chmod o+x static && chmod g+rwx static && mkdir media && chmod a+rwx media && django-admin startproject website && chmod g+rwx website && chmod a+rx website && cd website && python manage.py startapp {project.app_name}
+RUN umask 007 && chmod -R g+w /var/run/apache2 && chgrp -R root /var/log/apache2 && chmod -R g+w /var/log/apache2 && cd /etc/apache2 && cat append_to_apache2.conf >> apache2.conf && mv ports.conf dist_ports.conf && sed 's/Listen 80/Listen 8000/' dist_ports.conf > ports.conf && cd sites-available && mv 000-default.conf dist_000-default.conf && sed 's/VirtualHost \*:80/VirtualHost \*:8000/' dist_000-default.conf > 000-default.conf && chmod g+rwx /srv && cd /srv && mkdir --mode=0771 static && mkdir --mode=0777 media && django-admin startproject website && chmod 0775 website && cd website && python manage.py startapp {project.app_name}
 
 # Now that the website skeleton exists, copy in files for customization
 COPY website srv/website/
@@ -546,7 +546,7 @@ COPY ssl etc/ssl/
 # Apache configuration is done here through modification of the stock configuration files.
 # Django is then directed to create the skeleton website
 # This was the source of a helpful tip for standalone hosting: https://serverfault.com/questions/1046774/ah00035-access-to-denied-403-forbidden-django-mod-wsgi
-RUN umask 007 && chmod -R g+w /var/run/apache2 && chgrp -R root /var/log/apache2 && chmod -R g+w /var/log/apache2 && cd /etc/apache2 && cat append_to_apache2.conf >> apache2.conf && cd sites-available && mv default-ssl.conf default-ssl.conf.original && mv 000-default.conf 000-default.conf.original && sed -f ../default-ssl.conf.sed default-ssl.conf.original > default-ssl.conf && sed -f ../000-default.conf.sed 000-default.conf.original > 000-default.conf && cd ../sites-enabled && ln -s /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf && ln -s /etc/apache2/mods-available/ssl.conf /etc/apache2/mods-enabled && ln -s /etc/apache2/mods-available/socache_shmcb.load /etc/apache2/mods-enabled && ln -s /etc/apache2/mods-available/ssl.load /etc/apache2/mods-enabled && chmod g+rwx /srv && cd /srv && mkdir static && chmod o+x static && chmod g+rwx static && mkdir media && chmod a+rwx media && django-admin startproject website && chmod g+rwx website && chmod a+rx website && cd website && python manage.py startapp {project.app_name}
+RUN umask 007 && chmod -R g+w /var/run/apache2 && chgrp -R root /var/log/apache2 && chmod -R g+w /var/log/apache2 && cd /etc/apache2 && cat append_to_apache2.conf >> apache2.conf && cd sites-available && mv default-ssl.conf default-ssl.conf.original && mv 000-default.conf 000-default.conf.original && sed -f ../default-ssl.conf.sed default-ssl.conf.original > default-ssl.conf && sed -f ../000-default.conf.sed 000-default.conf.original > 000-default.conf && cd ../sites-enabled && ln -s /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf && ln -s /etc/apache2/mods-available/ssl.conf /etc/apache2/mods-enabled && ln -s /etc/apache2/mods-available/socache_shmcb.load /etc/apache2/mods-enabled && ln -s /etc/apache2/mods-available/ssl.load /etc/apache2/mods-enabled && chmod g+rwx /srv && cd /srv && mkdir --mode=0771 static && mkdir --mode=0777 media && django-admin startproject website && chmod 0775 website && cd website && python manage.py startapp {project.app_name}
 
 # Now that the website skeleton exists, copy in files for customization
 COPY website srv/website/
@@ -630,7 +630,7 @@ STATICFILES_DIRS = [\\
 # file:///usr/share/doc/python-django/html/ref/models/fields.html#django.db.models.FileField.upload_to\\
 MEDIA_URL = '/media/'\\
 MEDIA_ROOT = '/srv/media/'\\
-#DEBUG = False
+DEBUG = False
 '''
 
 generate(sed_script_settings_template,site_directory + 'sed_script_settings.py')    
