@@ -18,8 +18,10 @@ NERSC_project_id = ''
 ## Run on a standalone server
 
 server_name = 'localhost'
-platform = 'linux'
+platform = sys.platform
+
 engine = 'docker'
+#engine = 'podman'
 
 # These are the file locations in the host filesystem, as needed on a standalone server
 # Under Cygwin on a Windows computer, these must be translated to be recognized by Docker, which is installed separately
@@ -87,6 +89,9 @@ models = {
             'type' : 'models.TextField(max_length=8192,blank=True)',
             'filters' : ['exact','iexact','in','istartswith','icontains','iendswith','iregex','search'],
             },
+        # Storage locations can be customized through the "upload_to" keyword parameter
+        # For example: upload_to='independent/%Y/%m/%d'
+        # file:///usr/share/doc/python-django/html/ref/models/fields.html#django.db.models.FileField.upload_to
         'filefield' : {
             'type' : 'models.FileField(max_length=256,blank=True)',
             'filters' : [],
@@ -118,8 +123,7 @@ models = {
             'type' : 'models.TextField(max_length=8192,blank=True)',
             'filters' : ['exact','iexact','in','istartswith','icontains','iendswith','iregex','search'],
             },
-        # upload_to can be an explicit path, but defaults to FileSystemStorage and appended to MEDIA_ROOT, or can be callable
-        # Lots of useful details are provided here
+        # Storage locations can be customized through the upload_to keyword parameter
         # file:///usr/share/doc/python-django/html/ref/models/fields.html#django.db.models.FileField.upload_to
         'filefield' : {
             'type' : 'models.FileField(max_length=256,blank=True)',

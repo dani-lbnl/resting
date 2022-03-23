@@ -142,10 +142,9 @@ else:
 
 ## index.html
 
-index_html_template = '''{% extends "rest_framework/base.html" %}
-{% block branding %}
-''' + f'''<p><a class='body' rel='nofollow' href='{api_resource}'>Go to API</a></p><p><a class='body' rel='nofollow' href='/static/{project.app_name}/doc/'>Go to documentation</a></p>''' + '''
-{% endblock %}
+index_html_template = '''<!DOCTYPE html>
+<head></head>
+<body><h1>{project.app_name} homepage</h1><p><a class='body' rel='nofollow' href='{api_resource}'>Go to API</a></p><p><a class='body' rel='nofollow' href='/static/{project.app_name}/doc/'>Go to documentation</a></p></body>
 '''
 
 generate(index_html_template,template_directory + 'index.html')
