@@ -30,6 +30,9 @@
 * Writing tests
 * Code review
 * Other guidelines
+   
+### Example of deployment
+- Please see a [covidscreen.lbl.gov](https://covidscreen.lbl.gov/) for an example
 
 ### Please reference us:
  <div class="row">
